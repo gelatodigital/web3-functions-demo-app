@@ -1,24 +1,19 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import NavBar from "./components/NavBar";
+import Body from "./components/Body";
+
+import { ThirdwebProvider, ChainId } from "@thirdweb-dev/react";
 
 function App() {
+  const desiredChainId = ChainId.Mumbai;
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThirdwebProvider desiredChainId={desiredChainId}>
+      <div className="App bg-slate-600 h-screen flex flex-col content-center">
+        <NavBar />
+        <Body />
+      </div>
+    </ThirdwebProvider>
   );
 }
 
