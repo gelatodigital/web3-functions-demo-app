@@ -1,18 +1,26 @@
 {
-  "name": "create-gelato-app-react",
+  "name": "create-gasless-app",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
     "@gelatonetwork/relay-sdk": "^3.1.0",
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
+    "@reduxjs/toolkit": "^1.9.1",
+    "@thirdweb-dev/react": "^3.6.9",
+    "@thirdweb-dev/sdk": "^3.6.9",
+    "@tsconfig/recommended": "^1.0.2",
+    "@types/node": "^18.11.18",
+    "@types/react": "^18.0.27",
+    "@types/react-dom": "^18.0.10",
+    "@types/react-router": "^5.1.20",
     "daisyui": "^2.46.1",
+    "ethers": "^5.7.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-redux": "^8.0.5",
     "react-router-dom": "^6.6.1",
     "react-scripts": "^5.0.1",
-    "web-vitals": "^2.1.4"
+    "tailwindcss": "^3.2.4",
+    "typescript": "^4.9.4"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -37,11 +45,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "@thirdweb-dev/react": "^3.6.9",
-    "@thirdweb-dev/sdk": "^3.6.9",
-    "ethers": "^5.7.2",
-    "tailwindcss": "^3.2.4"
   }
 }

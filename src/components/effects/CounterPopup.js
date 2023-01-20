@@ -1,12 +1,12 @@
 import React from "react";
-import vitalikGif from "../assets/vitalik.gif";
+import wowGif from "../../assets/images/wow.gif";
 
-const Vitalik = () => {
+const CounterPopup = () => {
   return (
     <div className="toast toast-end">
       <div className="alert alert-info">
         <div>
-          <img src={vitalikGif} alt="wow" />
+          <img src={wowGif} alt="wow" />
         </div>
       </div>
       <div className="alert alert-success">
@@ -18,4 +18,4 @@ const Vitalik = () => {
   );
 };
 
-export default Vitalik;
+export default CounterPopup;

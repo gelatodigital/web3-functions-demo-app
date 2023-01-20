@@ -1,14 +1,15 @@
+// Package Imports
 import React from "react";
 import { ethers } from "ethers";
-import donateABI from "../assets/DonateToVitalik.json";
 import { GelatoRelay } from "@gelatonetwork/relay-sdk";
-import Vitalik from "./Vitalik";
+
+// Local Imports
+import donateABI from "../../assets/abi/DonateToVitalik.json";
+import Vitalik from "../effects/DonatePopup"
 
 import {
   useAddress,
   useContract,
-  // useContractRead,
-  //   useContractWrite,
   useChainId,
 } from "@thirdweb-dev/react";
 
@@ -17,7 +18,7 @@ import { useEffect, useState } from "react";
 const target = "0xb975E77F50c8a47a29de3C639d71705d4BbaB361"; // DonateToVitalik.sol
 const vitalik = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045";
 
-const WalletCard = () => {
+const DonateRelayApp = () => {
   const [buttonClicked, setButtonClicked] = useState(false);
   const [taskId, setTaskId] = useState(0);
   const [taskState, setTaskState] = useState("N/A");
@@ -247,4 +248,4 @@ const WalletCard = () => {
   );
 };
 
-export default WalletCard;
+export default DonateRelayApp;

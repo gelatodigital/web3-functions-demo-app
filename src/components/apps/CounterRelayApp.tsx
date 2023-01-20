@@ -1,14 +1,13 @@
 import React from "react";
 import { ethers } from "ethers";
-import counterABI from "../assets/SimpleCounter.json";
-import { GelatoRelay } from "@gelatonetwork/relay-sdk";
-import Wow from "./Wow";
+import counterABI from "../../assets/abi/SimpleCounter.json";
+import { GelatoRelay, CallWithSyncFeeRequest } from "@gelatonetwork/relay-sdk";
+import Wow from "../effects/CounterPopup";
 
 import {
   useAddress,
   useContract,
   useContractRead,
-  //   useContractWrite,
   useChainId,
 } from "@thirdweb-dev/react";
 
@@ -16,43 +15,42 @@ import { useEffect, useState } from "react";
 
 const target = "0x730615186326cF8f03E34a2B49ed0f43A38c0603";
 
-const CounterCard = () => {
+const CounterRelayApp = () => {
   const [buttonClicked, setButtonClicked] = useState(false);
-  const [taskId, setTaskId] = useState(0);
-  const [taskState, setTaskState] = useState("N/A");
-  const [timeToExecution, setTimeToExecution] = useState(0);
-  const [startTime, setStartTime] = useState(0);
+
+  const [task, setTask] = useState({id: "", status: "Waiting for Relay Request"});
+  const [timer, setTimer] = useState({start: 0, execution: 0});
   const [wow, setWow] = useState(false);
   const address = useAddress();
   const chainId = useChainId();
   const { contract, isLoading } = useContract(target, counterABI.abi);
   const { data: counterValue } = useContractRead(contract, "counter");
 
-    // const { mutate: increment } = useContractWrite(contract, "increment");
 
-  //   console.log("address connected:" + address);
-  //   console.log("chain id connected: " + chainId);
+
+  // const { mutate: increment } = useContractWrite(contract, "increment");
 
   const sendRelayRequest = async () => {
     setButtonClicked(true);
     setWow(false);
-    setTaskId(0);
-    setStartTime(0);
-    setTaskState("Loading...");
+    setTimer({...timer, start: 0})
+
     const relay = new GelatoRelay();
 
     // relay request paramaters
     const feeToken = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 
     // connecting to contract through front-end provider
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const provider = new ethers.providers.Web3Provider(window.ethereum as any);
     const signer = provider.getSigner();
     const contract = new ethers.Contract(target, counterABI.abi, signer);
 
     // getting function selector
     const { data } = await contract.populateTransaction.increment();
+  
+    if (!chainId || !data) return; // error display
 
-    const request = {
+    const request: CallWithSyncFeeRequest = {
       chainId,
       target,
       data,
@@ -61,50 +59,48 @@ const CounterCard = () => {
     };
 
     const relayResponse = await relay.callWithSyncFee(request);
-    console.log(relayResponse.taskId);
-    setTaskId(relayResponse.taskId);
-    setStartTime(Date.now());
+    setTask({...task, id: relayResponse.taskId})
+    setTimer({...timer, start: Date.now()});
   };
 
   useEffect(() => {
     let intervalId;
     let timeoutId;
-    if (taskId === 0) return;
+
+    console.log("in CounterRelayApp useEffect");
+
+    if (task.id === "") return;
 
     const getTaskState = async () => {
       try {
-        const url = `https://relay.gelato.digital/tasks/status/${taskId}`;
+        const url = `https://relay.gelato.digital/tasks/status/${task.id}`;
         const response = await fetch(url);
         const responseJson = await response.json();
-        console.log(responseJson);
-        setTaskState(responseJson.task.taskState);
+        setTask({...task, status: responseJson.task.taskState});
       } catch (error) {
         console.error(error);
       }
     };
 
-    console.log("taskId in useEffect:" + taskId);
-    console.log("taskState in useEffect:" + taskState);
-
-    if (taskState !== "ExecSuccess") {
+    if (task.status !== "ExecSuccess") {
       intervalId = setInterval(() => {
         getTaskState();
       }, 1500);
     } else {
-      setTimeToExecution(Date.now() - startTime);
+      setTimer({...timer, execution: Date.now() - timer.start})
       setWow(true);
       setButtonClicked(false);
     }
 
     timeoutId = setTimeout(() => {
       setWow(false);
-    }, "3000");
+    }, 3000);
 
     return () => {
       clearInterval(intervalId);
       clearTimeout(timeoutId);
     };
-  }, [taskId, taskState, startTime, timeToExecution]);
+  }, [task, timer]);
 
   return (
     <div className="flex flex-row justify-center mt-5 mr-8 ml-8">
@@ -137,7 +133,7 @@ const CounterCard = () => {
               disabled={!address}
               onClick={sendRelayRequest}
             >
-              {buttonClicked && taskState !== "ExecSuccess"
+              {buttonClicked && task.status !== "ExecSuccess"
                 ? "Gelato go brr"
                 : "Increment"}
             </button>
@@ -148,23 +144,23 @@ const CounterCard = () => {
         <div className="card-body">
           <div className="flex flex-col items-start  space-y-2">
             <h2 className="card-title">Counter Status Poller</h2>
-            <p>
+            <p className="break-words">
               <b>Task ID:</b>{" "}
               <a
-                href={`https://relay.gelato.digital/tasks/status/${taskId}`}
+                href={`https://relay.gelato.digital/tasks/status/${task.id}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 {" "}
-                {taskId !== 0 ? taskId : "Waiting for Relay Request"}{" "}
+                {task.id !== "" ? task.id : "Waiting for Relay Request"}{" "}
               </a>
             </p>
             <p className="self-start">
-              <b>Status:</b> {isLoading ? "Loading..." : taskState}
+              <b>Status:</b> {isLoading ? "Loading..." : task.status}
             </p>
             <p className="self-start">
               <b>Execution Time:</b>{" "}
-              {buttonClicked ? "Calculating..." : timeToExecution / 1000 + "s"}
+              {buttonClicked ? "Calculating..." : timer.execution / 1000 + "s"}
             </p>
           </div>
         </div>
@@ -174,4 +170,4 @@ const CounterCard = () => {
   );
 };
 
-export default CounterCard;
+export default CounterRelayApp;
