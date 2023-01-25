@@ -1,11 +1,11 @@
 // Package Imports
 import React from "react";
 import { ethers } from "ethers";
-import { GelatoRelay } from "@gelatonetwork/relay-sdk";
+import { GelatoRelay, CallWithSyncFeeRequest } from "@gelatonetwork/relay-sdk";
 
 // Local Imports
 import donateABI from "../../assets/abi/DonateToVitalik.json";
-import Vitalik from "../effects/DonatePopup"
+import DonatePopup from '../effects/DonatePopup';
 
 import {
   useAddress,
@@ -19,42 +19,45 @@ const target = "0xb975E77F50c8a47a29de3C639d71705d4BbaB361"; // DonateToVitalik.
 const vitalik = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045";
 
 const DonateRelayApp = () => {
-  const [buttonClicked, setButtonClicked] = useState(false);
-  const [taskId, setTaskId] = useState(0);
-  const [taskState, setTaskState] = useState("N/A");
-  const [timeToExecution, setTimeToExecution] = useState(0);
+  // task state
+  const [initiated, setInitiated] = useState(false);
+  const [taskId, setTaskId] = useState("");
+  const [taskStatus, setTaskStatus] = useState("N/A");
+  const [startTime, setStartTime] = useState(0);
+  const [endTime, setEndTime] = useState(0);
+
+  // blockchain state 
   const [vitalikBalance, setVitalikBalance] = useState(0);
   const [contractBalance, setContractBalance] = useState(0);
-  const [startTime, setStartTime] = useState(0);
-  const [wow, setWow] = useState(false);
+
+  // misc state
+  const [popup, setPopup] = useState(false);
+
+  // thirdweb blockchain hooks
   const address = useAddress();
   const chainId = useChainId();
-  const { contract, isLoading } = useContract(target, donateABI.abi);
+  const { isLoading } = useContract(target, donateABI.abi);
 
   //   const { mutate: increment } = useContractWrite(contract, "increment");
 
-  //   console.log("address connected:" + address);
-  //   console.log("chain id connected: " + chainId);
-
-  // console.log("vitalik's balance: " + vitalikBalance);
-
   const sendRelayRequest = async () => {
-    setButtonClicked(true);
-    setWow(false);
+    // update state
+    setInitiated(true);
+    setPopup(false);
     setTaskId(0);
     setStartTime(0);
-    setTaskState("Loading...");
-    const relay = new GelatoRelay();
+    setTaskStatus("Loading...");
 
-    // relay request paramaters
-    const feeToken = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+    // instantiating Gelato Relay SDK
+    const relay = new GelatoRelay();
 
     // connecting to contract through front-end provider
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     const contract = new ethers.Contract(target, donateABI.abi, signer);
 
-    // getting function selector
+    // building relay request paramaters
+    const feeToken = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
     const { data } = await contract.populateTransaction.sendToVitalik();
 
     const request = {
@@ -74,7 +77,7 @@ const DonateRelayApp = () => {
   useEffect(() => {
     let intervalId;
     let timeoutId;
-    if (taskId === 0) return;
+    if (taskId === "") return;
 
     const getTaskState = async () => {
       try {
@@ -82,7 +85,7 @@ const DonateRelayApp = () => {
         const response = await fetch(url);
         const responseJson = await response.json();
         console.log(responseJson);
-        setTaskState(responseJson.task.taskState);
+        setTaskStatus(responseJson.task.taskState);
       } catch (error) {
         console.error(error);
       }
@@ -103,29 +106,26 @@ const DonateRelayApp = () => {
       }
     };
 
-    console.log("taskId in useEffect:" + taskId);
-    console.log("taskState in useEffect:" + taskState);
-
-    if (taskState !== "ExecSuccess") {
+    if (taskStatus !== "ExecSuccess") {
       intervalId = setInterval(() => {
         getTaskState();
       }, 1500);
     } else {
-      setTimeToExecution(Date.now() - startTime);
-      setWow(true);
-      setButtonClicked(false);
+      setEndTime(Date.now() - startTime);
+      setPopup(true);
+      setInitiated(false);
       getVitaliksBalance();
     }
 
     timeoutId = setTimeout(() => {
-      setWow(false);
+      setPopup(false);
     }, "3000");
 
     return () => {
       clearInterval(intervalId);
       clearTimeout(timeoutId);
     };
-  }, [taskId, taskState, startTime, timeToExecution]);
+  }, [taskId, taskStatus, startTime, endTime]);
 
   useEffect(() => {
     const getVitaliksBalance = async () => {
@@ -159,7 +159,7 @@ const DonateRelayApp = () => {
 
     getContractBalance();
     getVitaliksBalance();
-  }, [address, taskState, timeToExecution]);
+  }, [address, taskStatus, endTime, popup]);
 
   return (
     <div className="flex flex-row justify-center mt-5 mr-8 ml-8">
@@ -169,7 +169,7 @@ const DonateRelayApp = () => {
             <h2 className="card-title">Gasless Donation</h2>
           </div>
           <a
-            href="https://mumbai.polygonscan.com/address/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045#internaltx"
+            href={`https://mumbai.polygonscan.com/address/${target}#internaltx`}
             target="_blank"
             rel="noopener noreferrer"
             className="link self-start"
@@ -180,7 +180,7 @@ const DonateRelayApp = () => {
           <p className="self-start">
             Vitalik's Balance:{" "}
             <a
-              href="https://mumbai.polygonscan.com/address/0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
+              href={`https://mumbai.polygonscan.com/address/${vitalik}`}
               target="_blank"
               rel="noopener noreferrer"
               className="link"
@@ -193,7 +193,7 @@ const DonateRelayApp = () => {
             {" "}
             Faucet Balance:{" "}
             <a
-              href="https://mumbai.polygonscan.com/address/0xb975E77F50c8a47a29de3C639d71705d4BbaB361"
+              href={`https://mumbai.polygonscan.com/address/${target}`}
               target="_blank"
               rel="noopener noreferrer"
               className="link"
@@ -206,12 +206,12 @@ const DonateRelayApp = () => {
           <div>
             <p>
               {" "}
-              <b> {address ? "" : "Connect your wallet to begin"} </b>{" "}
+              <b> {address && chainId === 80001  ? "" : "Connect your wallet to Mumbai to begin"} </b>{" "}
             </p>
           </div>
           <div className="card-actions justify-center">
-            <button className="btn btn-primary" disabled={!address} onClick={sendRelayRequest}>
-              {buttonClicked && taskState !== "ExecSuccess"
+            <button className="btn btn-primary" disabled={!(address && chainId === 80001)} onClick={sendRelayRequest}>
+              {initiated && taskStatus !== "ExecSuccess"
                 ? "Gelato go brr"
                 : "Donate"}
             </button>
@@ -234,15 +234,15 @@ const DonateRelayApp = () => {
               </a>
             </p>
             <p className="self-start">
-              <b>Status:</b> {isLoading ? "Loading..." : taskState}
+              <b>Status:</b> {isLoading ? "Loading..." : taskStatus}
             </p>
             <p className="self-start">
               <b>Execution Time:</b>{" "}
-              {buttonClicked ? "Calculating..." : timeToExecution / 1000 + "s"}
+              {initiated ? "Calculating..." : endTime / 1000 + "s"}
             </p>
           </div>
         </div>
-        <div className="animate-pulse">{wow ? <Vitalik /> : ""}</div>
+        <div className="animate-pulse">{popup ? <DonatePopup /> : ""}</div>
       </div>
     </div>
   );

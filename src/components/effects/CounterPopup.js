@@ -6,7 +6,7 @@ const CounterPopup = () => {
     <div className="toast toast-end">
       <div className="alert alert-info">
         <div>
-          <img src={wowGif} alt="wow" />
+          <img src={wowGif} height={400} width={400} alt="Wow!..." />
         </div>
       </div>
       <div className="alert alert-success">

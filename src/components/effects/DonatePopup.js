@@ -6,7 +6,7 @@ const DonatePopup = () => {
     <div className="toast toast-end">
       <div className="alert alert-info">
         <div>
-          <img src={vitalikGif} alt="wow" />
+          <img src={vitalikGif} height={400} width={400} alt="Thanks uWu" />
         </div>
       </div>
       <div className="alert alert-success">

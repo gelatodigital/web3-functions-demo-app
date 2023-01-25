@@ -13,6 +13,6 @@
     "strict": true
   },
   "files": [],
-  "include": ["./src/**/*.ts"],
+  "include": ["./src/**/*.ts", "archived/useStatus.ts", "archived/useStatusPoller.ts"],
   "exclude": ["node_modules"]
 }

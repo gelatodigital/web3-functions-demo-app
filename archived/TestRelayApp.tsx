@@ -4,11 +4,11 @@ import { ethers } from "ethers";
 import { GelatoRelay, CallWithSyncFeeRequest } from "@gelatonetwork/relay-sdk";
 
 // local assets
-import CounterABI from "../../assets/abi/SimpleCounter.json";
-import CounterPopup from "../effects/CounterPopup";
+import CounterABI from "../src/assets/abi/SimpleCounter.json";
+import CounterPopup from "../src/components/effects/CounterPopup";
 
 // local hook
-import useTestStatusPoller from "../../functions/useTestStatusPoller"
+import useTestStatusPoller from "../src/functions/useTestStatusPoller"
 
 import {
   useAddress,
@@ -54,9 +54,9 @@ const TestRelayApp = () => {
 
     const relayResponse = await relay.callWithSyncFee(request);
 
-    const status = useTestStatusPoller(relayResponse.taskId);
-    setTaskId(relayResponse.taskId);
-    setStatus("Querying")
+    // const status = useTestStatusPoller(relayResponse.taskId);
+    // setTaskId(relayResponse.taskId);
+    // setStatus("Querying")
   };
 
   // have to call functions/sendRelayRequest

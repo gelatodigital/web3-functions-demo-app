@@ -2,7 +2,7 @@ import React from "react";
 import { ethers } from "ethers";
 import counterABI from "../../assets/abi/SimpleCounter.json";
 import { GelatoRelay, CallWithSyncFeeRequest } from "@gelatonetwork/relay-sdk";
-import Wow from "../effects/CounterPopup";
+import CounterPopup from "../effects/CounterPopup";
 
 import {
   useAddress,
@@ -16,39 +16,44 @@ import { useEffect, useState } from "react";
 const target = "0x730615186326cF8f03E34a2B49ed0f43A38c0603";
 
 const CounterRelayApp = () => {
-  const [buttonClicked, setButtonClicked] = useState(false);
+  // task state
+  const [initiated, setInitiated] = useState(false);
+  const [taskId, setTaskId] = useState("");
+  const [taskStatus, setTaskStatus] = useState("N/A");
+  const [startTime, setStartTime] = useState(0);
+  const [endTime, setEndTime] = useState(0);
 
-  const [task, setTask] = useState({id: "", status: "Waiting for Relay Request"});
-  const [timer, setTimer] = useState({start: 0, execution: 0});
-  const [wow, setWow] = useState(false);
+  // misc state
+  const [popup, setPopup] = useState(false);
+
+  // third web blockchain hooks/data
   const address = useAddress();
   const chainId = useChainId();
   const { contract, isLoading } = useContract(target, counterABI.abi);
   const { data: counterValue } = useContractRead(contract, "counter");
 
 
-
-  // const { mutate: increment } = useContractWrite(contract, "increment");
-
   const sendRelayRequest = async () => {
-    setButtonClicked(true);
-    setWow(false);
-    setTimer({...timer, start: 0})
+    // update state
+    setInitiated(true);
+    setPopup(false);
+    setTaskId("");
+    setStartTime(0);
+    setTaskStatus("Loading...");
 
+    // instantiating Gelato Relay SDK
     const relay = new GelatoRelay();
-
-    // relay request paramaters
-    const feeToken = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 
     // connecting to contract through front-end provider
     const provider = new ethers.providers.Web3Provider(window.ethereum as any);
     const signer = provider.getSigner();
     const contract = new ethers.Contract(target, counterABI.abi, signer);
 
-    // getting function selector
+    // relay request parameters
+    const feeToken = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
     const { data } = await contract.populateTransaction.increment();
-  
-    if (!chainId || !data) return; // error display
+    
+    if(!chainId || !data) return;
 
     const request: CallWithSyncFeeRequest = {
       chainId,
@@ -59,48 +64,45 @@ const CounterRelayApp = () => {
     };
 
     const relayResponse = await relay.callWithSyncFee(request);
-    setTask({...task, id: relayResponse.taskId})
-    setTimer({...timer, start: Date.now()});
+    setTaskId(relayResponse.taskId);
+    setStartTime(Date.now());
   };
 
   useEffect(() => {
     let intervalId;
     let timeoutId;
-
-    console.log("in CounterRelayApp useEffect");
-
-    if (task.id === "") return;
+    if (taskId === "") return;
 
     const getTaskState = async () => {
       try {
-        const url = `https://relay.gelato.digital/tasks/status/${task.id}`;
+        const url = `https://relay.gelato.digital/tasks/status/${taskId}`;
         const response = await fetch(url);
         const responseJson = await response.json();
-        setTask({...task, status: responseJson.task.taskState});
+        setTaskStatus(responseJson.task.taskState);
       } catch (error) {
         console.error(error);
       }
     };
 
-    if (task.status !== "ExecSuccess") {
+    if (taskStatus !== "ExecSuccess") {
       intervalId = setInterval(() => {
         getTaskState();
       }, 1500);
     } else {
-      setTimer({...timer, execution: Date.now() - timer.start})
-      setWow(true);
-      setButtonClicked(false);
+      setEndTime(Date.now() - startTime);
+      setPopup(true);
+      setInitiated(false);
     }
 
     timeoutId = setTimeout(() => {
-      setWow(false);
+      setPopup(false);
     }, 3000);
 
     return () => {
       clearInterval(intervalId);
       clearTimeout(timeoutId);
     };
-  }, [task, timer]);
+  }, [taskId, taskStatus, startTime, endTime]);
 
   return (
     <div className="flex flex-row justify-center mt-5 mr-8 ml-8">
@@ -124,16 +126,16 @@ const CounterRelayApp = () => {
           <div>
             <p>
               {" "}
-              <b> {address ? "" : "Connect your wallet to begin"} </b>{" "}
+              <b> {address && chainId === 80001 ? "" : "Connect your wallet to Mumbai to begin"} </b>{" "}
             </p>
           </div>
           <div className="card-actions justify-center">
             <button
               className="btn btn-primary"
-              disabled={!address}
+              disabled={!(address && chainId === 80001)}
               onClick={sendRelayRequest}
             >
-              {buttonClicked && task.status !== "ExecSuccess"
+              {initiated && taskStatus !== "ExecSuccess"
                 ? "Gelato go brr"
                 : "Increment"}
             </button>
@@ -147,24 +149,24 @@ const CounterRelayApp = () => {
             <p className="break-words">
               <b>Task ID:</b>{" "}
               <a
-                href={`https://relay.gelato.digital/tasks/status/${task.id}`}
+                href={`https://relay.gelato.digital/tasks/status/${taskId}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 {" "}
-                {task.id !== "" ? task.id : "Waiting for Relay Request"}{" "}
+                {taskId !== "" ? taskId : "Waiting for Relay Request"}{" "}
               </a>
             </p>
             <p className="self-start">
-              <b>Status:</b> {isLoading ? "Loading..." : task.status}
+              <b>Status:</b> {isLoading ? "Loading..." : taskStatus}
             </p>
             <p className="self-start">
               <b>Execution Time:</b>{" "}
-              {buttonClicked ? "Calculating..." : timer.execution / 1000 + "s"}
+              {initiated ? "Calculating..." : endTime / 1000 + "s"}
             </p>
           </div>
         </div>
-        <div className="animate-pulse">{wow ? <Wow /> : ""}</div>
+        <div className="animate-pulse">{popup ? <CounterPopup /> : ""}</div>
       </div>
     </div>
   );
