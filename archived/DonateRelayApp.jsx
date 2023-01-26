@@ -4,8 +4,8 @@ import { ethers } from "ethers";
 import { GelatoRelay, CallWithSyncFeeRequest } from "@gelatonetwork/relay-sdk";
 
 // Local Imports
-import donateABI from "../../assets/abi/DonateToVitalik.json";
-import DonatePopup from '../effects/DonatePopup';
+import donateABI from "../src/assets/abi/DonateToVitalik.json";
+import DonatePopup from '../src/components/effects/DonatePopup';
 
 import {
   useAddress,

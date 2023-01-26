@@ -2,7 +2,7 @@ import React from "react";
 import { ethers } from "ethers";
 import NFTDropABI from "../../assets/abi/NFTDrop.json";
 import { GelatoRelay, SponsoredCallRequest } from "@gelatonetwork/relay-sdk";
-import CounterPopup from "../effects/CounterPopup";
+import Popup from "../effects/Popup";
 // import * as dotenv from "dotenv";
 
 import {
@@ -14,7 +14,7 @@ import {
 
 import { useEffect, useState } from "react";
 
-const target = "0x7a97a9C679605b55d3DA0B2810D3447c0F574DE3";
+const target = "0x42D4Db7452FD8e3Ec31594b63E44627fde89F326";
 
 const GaslessNFTApp = () => {
   // Process Env Variables
@@ -38,16 +38,6 @@ const GaslessNFTApp = () => {
   // contract object instantiate
   const { contract, isLoading } = useContract(target, "nft-drop");
   const { data: nfts } = useNFTs(contract, { start: 0, count: 20 });
-
-  useEffect(() => {
-    const getNextNFT = async (contract, nfts) => {
-      const claimedNFTCount = await contract.totalClaimedSupply();
-      const nextNFTIndex = claimedNFTCount.toNumber() + 1;
-      setNextNFTUrl(nfts[nextNFTIndex].metadata.image);
-    };
-
-    getNextNFT(contract, nfts);
-  }, [address, contract, nfts]);
 
   const sendRelayRequest = async () => {
     // update state
@@ -85,7 +75,7 @@ const GaslessNFTApp = () => {
 
     if (!chainId || !data) return;
 
-    const sponsorAPIkey = "eBrcJ2VJZiI33M_2lVr_JPCM_UsSWdqMO6ztpXRKVY0_";
+    const sponsorAPIkey = "Tc_16fJIjjQB6aCU0kkbBz_FY8MINRJga9XAq37RVus_";
 
     const request: SponsoredCallRequest = {
       chainId,
@@ -135,6 +125,18 @@ const GaslessNFTApp = () => {
     };
   }, [taskId, taskStatus, startTime, endTime]);
 
+  useEffect(() => {
+    const getNextNFT = async (contract, nfts) => {
+      const claimedNFTCount = await contract.totalClaimedSupply();
+      const nextNFTIndex = claimedNFTCount.toNumber();
+      setNextNFTUrl(nfts[nextNFTIndex].metadata.image);
+    };
+
+    getNextNFT(contract, nfts);
+
+    console.log("nextNFTUrl: " + nextNFTUrl);
+  }, [address, contract, nfts, nextNFTUrl]);
+
   return (
     <div className="flex flex-row justify-center mt-5 mr-8 ml-8">
       <div className="card w-96 bg-base-100 shadow-xl basis-1/5">
@@ -142,31 +144,33 @@ const GaslessNFTApp = () => {
           <div className="flex flex-col">
             <h2 className="card-title">Gasless NFT Drop</h2>
           </div>
-          <div className="mb-4 self-start">
-            Next available NFT:{" "}
-          </div>
-          <div>
-            {!address ? (
-              "Waiting for wallet"
-            ) : (
-              <img className="rounded-full" src={nextNFTUrl} alt="Gasless NFT" />
-            )}
-          </div>
+          {address && chainId === 137 ? (
+            <div className="grid">
+              <div className="mb-4 place-self-start">Next available NFT: </div>
+              <img
+                className="rounded-full"
+                src={nextNFTUrl}
+                alt="Gasless NFT"
+              />
+            </div>
+          ) : (
+            <p className="pt-2"></p>
+          )}
           <div>
             <p>
               {" "}
               <b>
                 {" "}
-                {address && chainId === 80001
+                {address && chainId === 137
                   ? ""
-                  : "Connect your wallet to Mumbai to begin"}{" "}
+                  : "Connect your wallet to Polygon to begin"}{" "}
               </b>{" "}
             </p>
           </div>
           <div className="card-actions justify-center">
             <button
-              className="btn btn-primary"
-              disabled={!(address && chainId === 80001)}
+              className="btn btn-primary mt-2"
+              disabled={!(address && chainId === 137)}
               onClick={sendRelayRequest}
             >
               {initiated && taskStatus !== "ExecSuccess"
@@ -200,7 +204,7 @@ const GaslessNFTApp = () => {
             </p>
           </div>
         </div>
-        <div className="animate-pulse">{popup ? <CounterPopup /> : ""}</div>
+        <div className="animate-pulse">{popup ? <Popup /> : ""}</div>
       </div>
     </div>
   );

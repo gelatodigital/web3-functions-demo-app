@@ -6,7 +6,7 @@ import { ThirdwebProvider, ChainId } from "@thirdweb-dev/react";
 import useTitle from "./hooks/useTitle";
 
 function App() {
-  const desiredChainId = ChainId.Mumbai;
+  const desiredChainId = ChainId.Polygon;
   useTitle("create-gasless-app");
   return (
     <ThirdwebProvider desiredChainId={desiredChainId}>

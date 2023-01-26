@@ -2,7 +2,7 @@ import React from "react";
 import { ethers } from "ethers";
 import counterABI from "../../assets/abi/SimpleCounter.json";
 import { GelatoRelay, CallWithSyncFeeRequest } from "@gelatonetwork/relay-sdk";
-import CounterPopup from "../effects/CounterPopup";
+import Popup from "../effects/Popup";
 
 import {
   useAddress,
@@ -114,7 +114,7 @@ const CounterRelayApp = () => {
           <div className="mb-4 self-start">
             Current Counter Value:{" "}
             <a
-              href={`https://mumbai.polygonscan.com/address/${target}#readProxyContract`}
+              href={`https://polygonscan.com/address/${target}#readProxyContract`}
               target="_blank"
               rel="noopener noreferrer"
               className="link"
@@ -126,13 +126,13 @@ const CounterRelayApp = () => {
           <div>
             <p>
               {" "}
-              <b> {address && chainId === 80001 ? "" : "Connect your wallet to Mumbai to begin"} </b>{" "}
+              <b> {address && chainId === 137 ? "" : "Connect your wallet to Polygon to begin"} </b>{" "}
             </p>
           </div>
           <div className="card-actions justify-center">
             <button
               className="btn btn-primary"
-              disabled={!(address && chainId === 80001)}
+              disabled={!(address && chainId === 137)}
               onClick={sendRelayRequest}
             >
               {initiated && taskStatus !== "ExecSuccess"
@@ -166,7 +166,7 @@ const CounterRelayApp = () => {
             </p>
           </div>
         </div>
-        <div className="animate-pulse">{popup ? <CounterPopup /> : ""}</div>
+        <div className="animate-pulse">{popup ? <Popup /> : ""}</div>
       </div>
     </div>
   );
