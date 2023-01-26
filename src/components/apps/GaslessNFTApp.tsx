@@ -1,22 +1,26 @@
 import React from "react";
 import { ethers } from "ethers";
-import counterABI from "../../assets/abi/SimpleCounter.json";
-import { GelatoRelay, CallWithSyncFeeRequest } from "@gelatonetwork/relay-sdk";
+import NFTDropABI from "../../assets/abi/NFTDrop.json";
+import { GelatoRelay, SponsoredCallRequest } from "@gelatonetwork/relay-sdk";
 import CounterPopup from "../effects/CounterPopup";
+// import * as dotenv from "dotenv";
 
 import {
   useAddress,
   useContract,
-  useContractRead,
   useChainId,
+  useNFTs,
 } from "@thirdweb-dev/react";
 
 import { useEffect, useState } from "react";
 
-const target = "0x730615186326cF8f03E34a2B49ed0f43A38c0603";
+const target = "0x7a97a9C679605b55d3DA0B2810D3447c0F574DE3";
 
-const CounterRelayApp = () => {
-  // task state
+const GaslessNFTApp = () => {
+  // Process Env Variables
+  // dotenv.config({ path: __dirname + "/.env" });
+  // const GELATO_API_KEY = process.env.GELATO_API_KEY as string;
+
   const [initiated, setInitiated] = useState(false);
   const [taskId, setTaskId] = useState("");
   const [taskStatus, setTaskStatus] = useState("N/A");
@@ -25,13 +29,25 @@ const CounterRelayApp = () => {
 
   // misc state
   const [popup, setPopup] = useState(false);
+  const [nextNFTUrl, setNextNFTUrl] = useState("");
 
   // third web blockchain hooks/data
   const address = useAddress();
   const chainId = useChainId();
-  const { contract, isLoading } = useContract(target, counterABI.abi);
-  const { data: counterValue } = useContractRead(contract, "counter");
 
+  // contract object instantiate
+  const { contract, isLoading } = useContract(target, "nft-drop");
+  const { data: nfts } = useNFTs(contract, { start: 0, count: 20 });
+
+  useEffect(() => {
+    const getNextNFT = async (contract, nfts) => {
+      const claimedNFTCount = await contract.totalClaimedSupply();
+      const nextNFTIndex = claimedNFTCount.toNumber() + 1;
+      setNextNFTUrl(nfts[nextNFTIndex].metadata.image);
+    };
+
+    getNextNFT(contract, nfts);
+  }, [address, contract, nfts]);
 
   const sendRelayRequest = async () => {
     // update state
@@ -45,25 +61,40 @@ const CounterRelayApp = () => {
     const relay = new GelatoRelay();
 
     // connecting to contract through front-end provider
-    const provider = new ethers.providers.Web3Provider(window.ethereum as any);
-    const signer = provider.getSigner();
-    const contract = new ethers.Contract(target, counterABI.abi, signer);
+    // const provider = new ethers.providers.Web3Provider(window.ethereum as any);
+    // const signer = provider.getSigner();
+    // const contract = new ethers.Contract(target, NFTDropABI, signer);
 
     // relay request parameters
     const feeToken = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
-    const { data } = await contract.populateTransaction.increment();
-    
-    if(!chainId || !data) return;
+    const iface = new ethers.utils.Interface(NFTDropABI);
+    const allowListProof = [
+      [ethers.constants.HashZero],
+      ethers.constants.MaxUint256,
+      0,
+      feeToken,
+    ];
+    const data = iface.encodeFunctionData("claim", [
+      address,
+      1,
+      feeToken,
+      0,
+      allowListProof,
+      ethers.constants.HashZero,
+    ]);
 
-    const request: CallWithSyncFeeRequest = {
+    if (!chainId || !data) return;
+
+    const sponsorAPIkey = "eBrcJ2VJZiI33M_2lVr_JPCM_UsSWdqMO6ztpXRKVY0_";
+
+    const request: SponsoredCallRequest = {
       chainId,
       target,
       data,
-      feeToken,
-      isRelayContext: true,
     };
 
-    const relayResponse = await relay.callWithSyncFee(request);
+    const relayResponse = await relay.sponsoredCall(request, sponsorAPIkey);
+    console.log("relayResponsse: " + relayResponse);
     setTaskId(relayResponse.taskId);
     setStartTime(Date.now());
   };
@@ -109,24 +140,27 @@ const CounterRelayApp = () => {
       <div className="card w-96 bg-base-100 shadow-xl basis-1/5">
         <div className="card-body">
           <div className="flex flex-col">
-            <h2 className="card-title">Gasless Counter</h2>
+            <h2 className="card-title">Gasless NFT Drop</h2>
           </div>
           <div className="mb-4 self-start">
-            Current Counter Value:{" "}
-            <a
-              href={`https://mumbai.polygonscan.com/address/${target}#readProxyContract`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="link"
-            >
-              {" "}
-              {isLoading ? "Loading..." : counterValue?.toNumber()}{" "}
-            </a>
+            Next available NFT:{" "}
+          </div>
+          <div>
+            {!address ? (
+              "Waiting for wallet"
+            ) : (
+              <img className="rounded-full" src={nextNFTUrl} alt="Gasless NFT" />
+            )}
           </div>
           <div>
             <p>
               {" "}
-              <b> {address && chainId === 80001 ? "" : "Connect your wallet to Mumbai to begin"} </b>{" "}
+              <b>
+                {" "}
+                {address && chainId === 80001
+                  ? ""
+                  : "Connect your wallet to Mumbai to begin"}{" "}
+              </b>{" "}
             </p>
           </div>
           <div className="card-actions justify-center">
@@ -137,7 +171,7 @@ const CounterRelayApp = () => {
             >
               {initiated && taskStatus !== "ExecSuccess"
                 ? "Gelato go brr"
-                : "Increment"}
+                : "Claim NFT"}
             </button>
           </div>
         </div>
@@ -145,7 +179,7 @@ const CounterRelayApp = () => {
       <div className="card w-96 bg-base-100 grow shadow-xl basis-1/5 ml-6">
         <div className="card-body">
           <div className="flex flex-col items-start  space-y-2">
-            <h2 className="card-title">Counter Status Poller</h2>
+            <h2 className="card-title">Gasless NFT Status Poller</h2>
             <p className="break-words">
               <b>Task ID:</b>{" "}
               <a
@@ -172,4 +206,4 @@ const CounterRelayApp = () => {
   );
 };
 
-export default CounterRelayApp;
+export default GaslessNFTApp;

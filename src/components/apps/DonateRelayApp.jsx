@@ -75,8 +75,8 @@ const DonateRelayApp = () => {
   };
 
   useEffect(() => {
-    let intervalId;
-    let timeoutId;
+    let statusQuery;
+    let popupTimer;
     if (taskId === "") return;
 
     const getTaskState = async () => {
@@ -107,7 +107,7 @@ const DonateRelayApp = () => {
     };
 
     if (taskStatus !== "ExecSuccess") {
-      intervalId = setInterval(() => {
+      statusQuery = setInterval(() => {
         getTaskState();
       }, 1500);
     } else {
@@ -117,13 +117,13 @@ const DonateRelayApp = () => {
       getVitaliksBalance();
     }
 
-    timeoutId = setTimeout(() => {
+    popupTimer = setTimeout(() => {
       setPopup(false);
     }, "3000");
 
     return () => {
-      clearInterval(intervalId);
-      clearTimeout(timeoutId);
+      clearInterval(statusQuery);
+      clearTimeout(popupTimer);
     };
   }, [taskId, taskStatus, startTime, endTime]);
 
