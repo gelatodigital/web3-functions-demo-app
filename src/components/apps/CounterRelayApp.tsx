@@ -2,7 +2,7 @@ import React from "react";
 import { ethers } from "ethers";
 import counterABI from "../../assets/abi/SimpleCounter.json";
 import { GelatoRelay, CallWithSyncFeeRequest } from "@gelatonetwork/relay-sdk";
-import Popup from "../effects/Popup";
+import StatusPoller from "./StatusPoller";
 
 import {
   useAddress,
@@ -32,7 +32,6 @@ const CounterRelayApp = () => {
   const { contract, isLoading } = useContract(target, counterABI.abi);
   const { data: counterValue } = useContractRead(contract, "counter");
 
-
   const sendRelayRequest = async () => {
     // update state
     setInitiated(true);
@@ -52,8 +51,8 @@ const CounterRelayApp = () => {
     // relay request parameters
     const feeToken = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
     const { data } = await contract.populateTransaction.increment();
-    
-    if(!chainId || !data) return;
+
+    if (!chainId || !data) return;
 
     const request: CallWithSyncFeeRequest = {
       chainId,
@@ -126,7 +125,12 @@ const CounterRelayApp = () => {
           <div>
             <p>
               {" "}
-              <b> {address && chainId === 137 ? "" : "Connect your wallet to Polygon to begin"} </b>{" "}
+              <b>
+                {" "}
+                {address && chainId === 137
+                  ? ""
+                  : "Connect your wallet to Polygon to begin"}{" "}
+              </b>{" "}
             </p>
           </div>
           <div className="card-actions justify-center">
@@ -142,32 +146,15 @@ const CounterRelayApp = () => {
           </div>
         </div>
       </div>
-      <div className="card w-96 bg-base-100 grow shadow-xl basis-1/5 ml-6">
-        <div className="card-body">
-          <div className="flex flex-col items-start  space-y-2">
-            <h2 className="card-title">Counter Status Poller</h2>
-            <p className="break-words">
-              <b>Task ID:</b>{" "}
-              <a
-                href={`https://relay.gelato.digital/tasks/status/${taskId}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {" "}
-                {taskId !== "" ? taskId : "Waiting for Relay Request"}{" "}
-              </a>
-            </p>
-            <p className="self-start">
-              <b>Status:</b> {isLoading ? "Loading..." : taskStatus}
-            </p>
-            <p className="self-start">
-              <b>Execution Time:</b>{" "}
-              {initiated ? "Calculating..." : endTime / 1000 + "s"}
-            </p>
-          </div>
-        </div>
-        <div className="animate-pulse">{popup ? <Popup /> : ""}</div>
-      </div>
+      <StatusPoller
+        title="Counter"
+        isLoading={isLoading}
+        taskId={taskId}
+        taskStatus={taskStatus}
+        initiated={initiated}
+        endTime={endTime}
+        popup={popup}
+      />
     </div>
   );
 };

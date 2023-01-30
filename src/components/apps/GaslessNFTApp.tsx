@@ -1,9 +1,11 @@
 import React from "react";
 import { ethers } from "ethers";
 import NFTDropABI from "../../assets/abi/NFTDrop.json";
-import { GelatoRelay, SponsoredCallRequest } from "@gelatonetwork/relay-sdk";
-import Popup from "../effects/Popup";
-// import * as dotenv from "dotenv";
+import {
+  GelatoRelay,
+  SponsoredCallERC2771Request,
+} from "@gelatonetwork/relay-sdk";
+import StatusPoller from "./StatusPoller";
 
 import {
   useAddress,
@@ -51,7 +53,7 @@ const GaslessNFTApp = () => {
     const relay = new GelatoRelay();
 
     // connecting to contract through front-end provider
-    // const provider = new ethers.providers.Web3Provider(window.ethereum as any);
+    const provider = new ethers.providers.Web3Provider(window.ethereum as any);
     // const signer = provider.getSigner();
     // const contract = new ethers.Contract(target, NFTDropABI, signer);
 
@@ -75,15 +77,20 @@ const GaslessNFTApp = () => {
 
     if (!chainId || !data) return;
 
-    const sponsorAPIkey = "Tc_16fJIjjQB6aCU0kkbBz_FY8MINRJga9XAq37RVus_";
+    const sponsorAPIkey = "S8KmRS__lgotqO02LRlpxPbOYzW925_a7NGbIoDDI5o_";
 
-    const request: SponsoredCallRequest = {
+    const request: SponsoredCallERC2771Request = {
       chainId,
       target,
       data,
+      user: address as string,
     };
 
-    const relayResponse = await relay.sponsoredCall(request, sponsorAPIkey);
+    const relayResponse = await relay.sponsoredCallERC2771(
+      request,
+      provider,
+      sponsorAPIkey
+    );
     console.log("relayResponsse: " + relayResponse);
     setTaskId(relayResponse.taskId);
     setStartTime(Date.now());
@@ -180,32 +187,15 @@ const GaslessNFTApp = () => {
           </div>
         </div>
       </div>
-      <div className="card w-96 bg-base-100 grow shadow-xl basis-1/5 ml-6">
-        <div className="card-body">
-          <div className="flex flex-col items-start  space-y-2">
-            <h2 className="card-title">Gasless NFT Status Poller</h2>
-            <p className="break-words">
-              <b>Task ID:</b>{" "}
-              <a
-                href={`https://relay.gelato.digital/tasks/status/${taskId}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {" "}
-                {taskId !== "" ? taskId : "Waiting for Relay Request"}{" "}
-              </a>
-            </p>
-            <p className="self-start">
-              <b>Status:</b> {isLoading ? "Loading..." : taskStatus}
-            </p>
-            <p className="self-start">
-              <b>Execution Time:</b>{" "}
-              {initiated ? "Calculating..." : endTime / 1000 + "s"}
-            </p>
-          </div>
-        </div>
-        <div className="animate-pulse">{popup ? <Popup /> : ""}</div>
-      </div>
+      <StatusPoller
+        title="NFT"
+        isLoading={isLoading}
+        taskId={taskId}
+        taskStatus={taskStatus}
+        initiated={initiated}
+        endTime={endTime}
+        popup={popup}
+      />
     </div>
   );
 };
