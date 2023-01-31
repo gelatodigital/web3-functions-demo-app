@@ -5,7 +5,7 @@ import {
   GelatoRelay,
   SponsoredCallERC2771Request,
 } from "@gelatonetwork/relay-sdk";
-import StatusPoller from "./StatusPoller";
+import StatusPoller from "../effects/StatusPoller";
 
 import {
   useAddress,
@@ -13,6 +13,8 @@ import {
   useChainId,
   useNFTs,
 } from "@thirdweb-dev/react";
+
+import { NFT, NFTDrop } from "@thirdweb-dev/sdk";
 
 import { useEffect, useState } from "react";
 
@@ -25,6 +27,7 @@ const GaslessNFTApp = () => {
 
   const [initiated, setInitiated] = useState(false);
   const [taskId, setTaskId] = useState("");
+  const [txHash, setTxHash] = useState("");
   const [taskStatus, setTaskStatus] = useState("N/A");
   const [startTime, setStartTime] = useState(0);
   const [endTime, setEndTime] = useState(0);
@@ -39,13 +42,14 @@ const GaslessNFTApp = () => {
 
   // contract object instantiate
   const { contract, isLoading } = useContract(target, "nft-drop");
-  const { data: nfts } = useNFTs(contract, { start: 0, count: 20 });
+  const { data: nfts, refetch } = useNFTs(contract, { start: 0, count: 20 });
 
   const sendRelayRequest = async () => {
     // update state
     setInitiated(true);
     setPopup(false);
     setTaskId("");
+    setTxHash("");
     setStartTime(0);
     setTaskStatus("Loading...");
 
@@ -54,8 +58,6 @@ const GaslessNFTApp = () => {
 
     // connecting to contract through front-end provider
     const provider = new ethers.providers.Web3Provider(window.ethereum as any);
-    // const signer = provider.getSigner();
-    // const contract = new ethers.Contract(target, NFTDropABI, signer);
 
     // relay request parameters
     const feeToken = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
@@ -91,22 +93,24 @@ const GaslessNFTApp = () => {
       provider,
       sponsorAPIkey
     );
-    console.log("relayResponsse: " + relayResponse);
     setTaskId(relayResponse.taskId);
     setStartTime(Date.now());
   };
 
   useEffect(() => {
-    let statusQuery;
-    let popupTimer;
+    let statusQuery: NodeJS.Timer;
+    let popupTimer: NodeJS.Timer;
     if (taskId === "") return;
 
-    const getTaskState = async () => {
+    const getTaskState = async (getTxHash = false) => {
       try {
         const url = `https://relay.gelato.digital/tasks/status/${taskId}`;
         const response = await fetch(url);
         const responseJson = await response.json();
         setTaskStatus(responseJson.task.taskState);
+        if (getTxHash) {
+          setTxHash(responseJson.task.transactionHash);
+        }
       } catch (error) {
         console.error(error);
       }
@@ -117,6 +121,7 @@ const GaslessNFTApp = () => {
         getTaskState();
       }, 1500);
     } else {
+      getTaskState(true);
       setEndTime(Date.now() - startTime);
       setPopup(true);
       setInitiated(false);
@@ -124,6 +129,7 @@ const GaslessNFTApp = () => {
 
     popupTimer = setTimeout(() => {
       setPopup(false);
+      refetch();
     }, 3000);
 
     return () => {
@@ -133,13 +139,13 @@ const GaslessNFTApp = () => {
   }, [taskId, taskStatus, startTime, endTime]);
 
   useEffect(() => {
-    const getNextNFT = async (contract, nfts) => {
+    const getNextNFT = async (contract: NFTDrop, nfts: NFT[]) => {
       const claimedNFTCount = await contract.totalClaimedSupply();
       const nextNFTIndex = claimedNFTCount.toNumber();
-      setNextNFTUrl(nfts[nextNFTIndex].metadata.image);
+      setNextNFTUrl(nfts[nextNFTIndex].metadata.image!);
     };
 
-    getNextNFT(contract, nfts);
+    getNextNFT(contract!, nfts!);
 
     console.log("nextNFTUrl: " + nextNFTUrl);
   }, [address, contract, nfts, nextNFTUrl]);
@@ -154,11 +160,15 @@ const GaslessNFTApp = () => {
           {address && chainId === 137 ? (
             <div className="grid">
               <div className="mb-4 place-self-start">Next available NFT: </div>
-              <img
-                className="rounded-full"
-                src={nextNFTUrl}
-                alt="Gasless NFT"
-              />
+              {isLoading ? (
+                "Getting NFT data, please wait a moment..."
+              ) : (
+                <img
+                  className="rounded-full"
+                  src={nextNFTUrl}
+                  alt="Gasless NFT"
+                />
+              )}
             </div>
           ) : (
             <p className="pt-2"></p>
@@ -194,6 +204,7 @@ const GaslessNFTApp = () => {
         taskStatus={taskStatus}
         initiated={initiated}
         endTime={endTime}
+        txHash={txHash}
         popup={popup}
       />
     </div>

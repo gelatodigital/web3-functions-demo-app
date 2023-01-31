@@ -10,9 +10,12 @@
     "typeRoots": ["./node_modules/@types"],
     "outDir": "dist",
     "jsx": "react-jsx",
-    "strict": true
+    "strict": true,
+
+    // generate .d.ts files for package.json types field
+    "declaration": true
   },
   "files": [],
-  "include": ["./src/**/*.ts", "archived/useStatus.ts", "archived/useStatusPoller.ts"],
+  "include": ["./src", "./src/**/*.ts", "./src/**/.tsx", "src/types"],
   "exclude": ["node_modules"]
 }

@@ -2,7 +2,8 @@ import React from "react";
 import { ethers } from "ethers";
 import counterABI from "../../assets/abi/SimpleCounter.json";
 import { GelatoRelay, CallWithSyncFeeRequest } from "@gelatonetwork/relay-sdk";
-import StatusPoller from "./StatusPoller";
+
+import StatusPoller from "../effects/StatusPoller";
 
 import {
   useAddress,
@@ -20,6 +21,7 @@ const CounterRelayApp = () => {
   const [initiated, setInitiated] = useState(false);
   const [taskId, setTaskId] = useState("");
   const [taskStatus, setTaskStatus] = useState("N/A");
+  const [txHash, setTxHash] = useState("");
   const [startTime, setStartTime] = useState(0);
   const [endTime, setEndTime] = useState(0);
 
@@ -30,13 +32,14 @@ const CounterRelayApp = () => {
   const address = useAddress();
   const chainId = useChainId();
   const { contract, isLoading } = useContract(target, counterABI.abi);
-  const { data: counterValue } = useContractRead(contract, "counter");
+  const { data: counterValue, refetch } = useContractRead(contract, "counter");
 
   const sendRelayRequest = async () => {
     // update state
     setInitiated(true);
     setPopup(false);
     setTaskId("");
+    setTxHash("");
     setStartTime(0);
     setTaskStatus("Loading...");
 
@@ -68,16 +71,19 @@ const CounterRelayApp = () => {
   };
 
   useEffect(() => {
-    let statusQuery;
-    let popupTimer;
+    let statusQuery: NodeJS.Timer;
+    let popupTimer: NodeJS.Timer;
     if (taskId === "") return;
 
-    const getTaskState = async () => {
+    const getTaskState = async (getTxHash = false) => {
       try {
         const url = `https://relay.gelato.digital/tasks/status/${taskId}`;
         const response = await fetch(url);
         const responseJson = await response.json();
         setTaskStatus(responseJson.task.taskState);
+        if (getTxHash) {
+          setTxHash(responseJson.task.transactionHash);
+        }
       } catch (error) {
         console.error(error);
       }
@@ -88,6 +94,7 @@ const CounterRelayApp = () => {
         getTaskState();
       }, 1500);
     } else {
+      getTaskState(true);
       setEndTime(Date.now() - startTime);
       setPopup(true);
       setInitiated(false);
@@ -95,6 +102,7 @@ const CounterRelayApp = () => {
 
     popupTimer = setTimeout(() => {
       setPopup(false);
+      refetch();
     }, 3000);
 
     return () => {
@@ -153,6 +161,7 @@ const CounterRelayApp = () => {
         taskStatus={taskStatus}
         initiated={initiated}
         endTime={endTime}
+        txHash={txHash}
         popup={popup}
       />
     </div>

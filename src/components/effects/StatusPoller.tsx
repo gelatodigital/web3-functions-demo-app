@@ -1,6 +1,4 @@
-import React from "react";
-
-import Popup from "../effects/Popup";
+import Popup from "./Popup";
 
 interface StatusPollerProps {
   title: string;
@@ -9,6 +7,7 @@ interface StatusPollerProps {
   taskStatus: string;
   initiated: boolean;
   endTime: number;
+  txHash: string;
   popup: boolean;
 }
 
@@ -26,7 +25,9 @@ const StatusPoller = (props: StatusPollerProps) => {
               rel="noopener noreferrer"
             >
               {" "}
-              {props.taskId !== "" ? props.taskId : "Waiting for Relay Request"}{" "}
+              {props.taskId !== ""
+                ? props.taskId
+                : "Waiting for Relay Request"}{" "}
             </a>
           </p>
           <p className="self-start">
@@ -35,6 +36,21 @@ const StatusPoller = (props: StatusPollerProps) => {
           <p className="self-start">
             <b>Execution Time:</b>{" "}
             {props.initiated ? "Calculating..." : props.endTime / 1000 + "s"}
+          </p>
+          <p className="self-start">
+            <b>Tx Hash:</b>{" "}
+            {props.txHash !== "" ? (
+              <a
+                href={`https://polygonscan.com/tx/${props.txHash}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="link"
+              >
+                {props.txHash}
+              </a>
+            ) : (
+              "Waiting for transaction hash"
+            )}
           </p>
         </div>
       </div>
