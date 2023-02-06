@@ -36,10 +36,10 @@ const StatusPoller = (props: StatusPollerProps) => {
           <p className="self-start">
             <b>Execution Time:</b>{" "}
             {props.initiated ? "Calculating..." : props.endTime / 1000 + "s"}
-          </p>
-          <p className="self-start">
-            <b>Tx Hash:</b>{" "}
-            {props.txHash !== "" ? (
+          </p>{" "}
+          {props.txHash !== "" ? (
+            <p className="self-start">
+              <b>Tx Hash: </b>
               <a
                 href={`https://polygonscan.com/tx/${props.txHash}`}
                 target="_blank"
@@ -48,10 +48,10 @@ const StatusPoller = (props: StatusPollerProps) => {
               >
                 {props.txHash}
               </a>
-            ) : (
-              "Waiting for transaction hash"
-            )}
-          </p>
+            </p>
+          ) : (
+            ""
+          )}
         </div>
       </div>
       <div className="animate-pulse">{props.popup ? <Popup /> : ""}</div>

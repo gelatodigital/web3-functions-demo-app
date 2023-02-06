@@ -1,4 +1,3 @@
-import React from "react";
 import { ethers } from "ethers";
 import NFTDropABI from "../../assets/abi/NFTDrop.json";
 import {
@@ -13,7 +12,6 @@ import {
   useChainId,
   useNFTs,
 } from "@thirdweb-dev/react";
-
 import { NFT, NFTDrop } from "@thirdweb-dev/sdk";
 
 import { useEffect, useState } from "react";
@@ -21,10 +19,6 @@ import { useEffect, useState } from "react";
 const target = "0x42D4Db7452FD8e3Ec31594b63E44627fde89F326";
 
 const GaslessNFTApp = () => {
-  // Process Env Variables
-  // dotenv.config({ path: __dirname + "/.env" });
-  // const GELATO_API_KEY = process.env.GELATO_API_KEY as string;
-
   const [initiated, setInitiated] = useState(false);
   const [taskId, setTaskId] = useState("");
   const [txHash, setTxHash] = useState("");
@@ -79,7 +73,7 @@ const GaslessNFTApp = () => {
 
     if (!chainId || !data) return;
 
-    const sponsorAPIkey = "S8KmRS__lgotqO02LRlpxPbOYzW925_a7NGbIoDDI5o_";
+    const sponsorAPIkey = "";
 
     const request: SponsoredCallERC2771Request = {
       chainId,

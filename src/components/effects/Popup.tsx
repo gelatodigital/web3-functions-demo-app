@@ -1,4 +1,3 @@
-import React from "react";
 import stickman from "../../assets/images/stickman.gif";
 
 const Popup = () => {
