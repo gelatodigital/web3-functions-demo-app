@@ -1,7 +1,7 @@
 import React from "react";
 import { ConnectWallet } from "@thirdweb-dev/react";
 
-import gelato from "../assets/gelato.png";
+import gelato from "../assets/images/gelato.png";
 
 const NavBar = () => {
   return (
@@ -26,8 +26,8 @@ const NavBar = () => {
               Docs
             </a>
           </li>
-          <li className="z-10" tabIndex="0">
-            <a>
+          <li className="z-10" tabIndex={0}>
+            <a href="/">
               Contact Us
               <svg
                 className="fill-current"

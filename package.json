@@ -1,24 +1,57 @@
 {
-  "name": "create-gelato-app-react",
+  "name": "create-gasless-app",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
     "@gelatonetwork/relay-sdk": "^3.1.0",
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
+    "@nomiclabs/hardhat-ethers": "^2.2.2",
+    "@openzeppelin/contracts-upgradeable": "^4.8.1",
+    "@thirdweb-dev/contracts": "^3.3.2",
+    "@thirdweb-dev/react": "^3.6.9",
+    "@thirdweb-dev/sdk": "^3.6.9",
+    "@tsconfig/recommended": "^1.0.2",
+    "@typechain/ethers-v5": "^10.2.0",
+    "@typechain/hardhat": "^6.1.5",
+    "@types/node": "^18.11.18",
+    "@types/react": "^18.0.27",
+    "@types/react-dom": "^18.0.10",
+    "@types/react-router": "^5.1.20",
+    "@typescript-eslint/eslint-plugin": "^5.49.0",
+    "@typescript-eslint/parser": "^5.49.0",
     "daisyui": "^2.46.1",
+    "eslint": "^8.33.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "ethers": "^5.7.2",
+    "hardhat": "^2.12.6",
+    "prettier": "^2.8.3",
+    "prettier-plugin-solidity": "^1.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.6.1",
     "react-scripts": "^5.0.1",
-    "web-vitals": "^2.1.4"
+    "solhint": "^3.3.8",
+    "solhint-plugin-prettier": "^0.0.5",
+    "tailwindcss": "^3.2.4",
+    "ts-node": "^10.9.1",
+    "typechain": "^8.1.1",
+    "typescript": "^4.9.4"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "build-react": "react-scripts build",
+    "test-react": "react-scripts test",
+    "eject-react": "react-scripts eject",
+    "build": "yarn install && yarn compile && npx tsc",
+    "clean": "yarn hardhat clean && rm -rf dist",
+    "compile": "npx hardhat compile",
+    "format": "prettier --write '*/**/*.*{js,sol,json,md,ts}'",
+    "format:check": "prettier --check '*/**/*.*{js,sol,json,md,ts}'",
+    "lint": "eslint --cache . && yarn lint:sol",
+    "lint:ts": "eslint -c .eslintrc.json --ext \"**/*.ts\" \"**/*.test.ts\"",
+    "lint:sol": "solhint 'contracts/**/*.sol'",
+    "test": "npx hardhat test",
+    "verify": "npx hardhat etherscan-verify"
   },
   "eslintConfig": {
     "extends": [
@@ -37,11 +70,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "@thirdweb-dev/react": "^3.6.9",
-    "@thirdweb-dev/sdk": "^3.6.9",
-    "ethers": "^5.7.2",
-    "tailwindcss": "^3.2.4"
   }
 }
