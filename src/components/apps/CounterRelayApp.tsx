@@ -5,18 +5,17 @@ import { GelatoRelay, CallWithSyncFeeRequest } from "@gelatonetwork/relay-sdk";
 
 import StatusPoller from "../effects/StatusPoller";
 
-import {
-  useAddress,
-  useContract,
-  useContractRead,
-  useChainId,
-} from "@thirdweb-dev/react";
+interface CounterRelayAppProps {
+  connected: boolean;
+  address: string;
+  chainId: number;
+}
 
 import { useEffect, useState } from "react";
 
 const target = "0x730615186326cF8f03E34a2B49ed0f43A38c0603";
 
-const CounterRelayApp = () => {
+const CounterRelayApp = (props: CounterRelayAppProps) => {
   // task state
   const [initiated, setInitiated] = useState(false);
   const [taskId, setTaskId] = useState("");
@@ -24,15 +23,12 @@ const CounterRelayApp = () => {
   const [txHash, setTxHash] = useState("");
   const [startTime, setStartTime] = useState(0);
   const [endTime, setEndTime] = useState(0);
+  const [counterValue, setCounterValue] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   // misc state
   const [popup, setPopup] = useState(false);
 
-  // third web blockchain hooks/data
-  const address = useAddress();
-  const chainId = useChainId();
-  const { contract, isLoading } = useContract(target, counterABI.abi);
-  const { data: counterValue, refetch } = useContractRead(contract, "counter");
 
   const sendRelayRequest = async () => {
     // update state
@@ -55,10 +51,10 @@ const CounterRelayApp = () => {
     const feeToken = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
     const { data } = await contract.populateTransaction.increment();
 
-    if (!chainId || !data) return;
+    if (!props.chainId || !data) return;
 
     const request: CallWithSyncFeeRequest = {
-      chainId,
+      chainId: props.chainId,
       target,
       data,
       feeToken,
@@ -68,6 +64,21 @@ const CounterRelayApp = () => {
     const relayResponse = await relay.callWithSyncFee(request);
     setTaskId(relayResponse.taskId);
     setStartTime(Date.now());
+  };
+
+  const getContractState = async () => {
+    const provider = new ethers.providers.Web3Provider(
+      window.ethereum as any
+    );
+    const signer = provider.getSigner();
+    const contract = new ethers.Contract(target, counterABI.abi, signer);
+
+    console.log("In getContractState");
+    const counterState = await contract.counter();
+    console.log("Getting value: ");
+    console.log(counterState.toNumber());
+    counterState !== undefined ? setCounterValue(counterState.toString()) : setCounterValue("N/A");
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -102,7 +113,6 @@ const CounterRelayApp = () => {
 
     popupTimer = setTimeout(() => {
       setPopup(false);
-      refetch();
     }, 3000);
 
     return () => {
@@ -127,15 +137,16 @@ const CounterRelayApp = () => {
               className="link"
             >
               {" "}
-              {isLoading ? "Loading..." : counterValue?.toNumber()}{" "}
+              {isLoading ? "Loading..." : counterValue}{" "}
             </a>
+            <button className="btn btn-primary mt-4" onClick={getContractState}> Get Counter Value </button>
           </div>
           <div>
             <p>
               {" "}
               <b>
                 {" "}
-                {address && chainId === 137
+                {props.address && props.chainId === 137
                   ? ""
                   : "Connect your wallet to Polygon to begin"}{" "}
               </b>{" "}
@@ -144,7 +155,7 @@ const CounterRelayApp = () => {
           <div className="card-actions justify-center">
             <button
               className="btn btn-primary"
-              disabled={!(address && chainId === 137)}
+              disabled={!(props.address && props.chainId === 137)}
               onClick={sendRelayRequest}
             >
               {initiated && taskStatus !== "ExecSuccess"

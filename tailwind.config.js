@@ -5,6 +5,7 @@ module.exports = {
     extend: {
       colors: {
         "gelato-button": "#1C4BA3",
+        "connect-button": "#6519e6",
       },
     },
   },

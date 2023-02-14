@@ -1,9 +1,15 @@
 import React from "react";
-import { ConnectWallet } from "@thirdweb-dev/react";
 
 import gelato from "../assets/images/gelato.png";
+import metamask from "../assets/images/metamask.png";
 
-const NavBar = () => {
+interface NavBarProps {
+  connected: boolean;
+  address: string;
+  connectButton: (params: any) => any;
+}
+
+const NavBar = (props: NavBarProps) => {
   return (
     <div className="navbar bg-base-100">
       <div className="flex-1">
@@ -61,7 +67,22 @@ const NavBar = () => {
             </ul>
           </li>
           <li>
-            <ConnectWallet accentColor="#6519e6" colorMode="dark" />
+            {!props.connected ? (
+              <button
+                className="btn bg-connect-button"
+                onClick={props.connectButton}
+              >
+                {" "}
+                Connect Wallet{" "}
+              </button>
+            ) : (
+              <button className="btn bg-connect-button">
+                {" "}
+                <img src={metamask} width={25} height={25} />{" "}
+                {props.address.slice(0, 5) + "..." + props.address.slice(-3)}{" "}
+              </button>
+            )}
+            {/* <ConnectWallet accentColor="#6519e6" colorMode="dark" /> */}
           </li>
         </ul>
       </div>
