@@ -14,7 +14,7 @@ const NavBar = (props: NavBarProps) => {
     <div className="navbar bg-base-100">
       <div className="flex-1">
         <a href="/" className="btn btn-ghost normal-case text-xl">
-          <img
+          <img style={{'background': '#475569'}}
             className="object-scale-down h-12 w-12"
             src={gelato}
             alt="Gelato"

@@ -12,12 +12,13 @@ function App() {
   const [chainId, setChainId] = useState(0);
 
   const connectButton = async () => {
-    const { ethereum } = window;
+
+     let ethereum = (window as any).ethereum;
     if (!ethereum) {
       alert("Please install Metamask");
     } else if (ethereum.isMetaMask) {
       const provider = new ethers.providers.Web3Provider(
-        window.ethereum as any
+        ethereum as any
       );
       const accounts = await provider.send("eth_requestAccounts", []);
       const { chainId } = await provider.getNetwork();
@@ -25,6 +26,8 @@ function App() {
       if (chainId !== 137) {
         alert("Please connect to Polygon");
       }
+
+      
       setChainId(chainId);
       console.log(chainId);
       setConnected(true);

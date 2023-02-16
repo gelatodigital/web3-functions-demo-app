@@ -25,10 +25,9 @@ const CounterRelayApp = (props: CounterRelayAppProps) => {
   const [endTime, setEndTime] = useState(0);
   const [counterValue, setCounterValue] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-
+  const [chainId, setChainId] = useState(0);
   // misc state
   const [popup, setPopup] = useState(false);
-
 
   const sendRelayRequest = async () => {
     // update state
@@ -43,7 +42,8 @@ const CounterRelayApp = (props: CounterRelayAppProps) => {
     const relay = new GelatoRelay();
 
     // connecting to contract through front-end provider
-    const provider = new ethers.providers.Web3Provider(window.ethereum as any);
+    const provider = new ethers.providers.Web3Provider((window as any).ethereum );
+
     const signer = provider.getSigner();
     const contract = new ethers.Contract(target, counterABI.abi, signer);
 
@@ -67,8 +67,9 @@ const CounterRelayApp = (props: CounterRelayAppProps) => {
   };
 
   const getContractState = async () => {
+ 
     const provider = new ethers.providers.Web3Provider(
-      window.ethereum as any
+      (window as any).ethereum
     );
     const signer = provider.getSigner();
     const contract = new ethers.Contract(target, counterABI.abi, signer);
@@ -82,6 +83,7 @@ const CounterRelayApp = (props: CounterRelayAppProps) => {
   };
 
   useEffect(() => {
+   
     let statusQuery: NodeJS.Timer;
     let popupTimer: NodeJS.Timer;
     if (taskId === "") return;
