@@ -2,9 +2,34 @@
   "name": "create-gasless-app",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "chain": "cd hardhat && npx hardhat --tsconfig ./tsconfig.hardhat.json node",
+    "compile": "cd hardhat && npx hardhat --tsconfig ./tsconfig.hardhat.json compile",
+    "fork": "cd hardhat && npx hardhat --tsconfig ./tsconfig.hardhat.json node  --network hardhat",
+    "contract:deploy": "cd hardhat && npx hardhat --tsconfig ./tsconfig.hardhat.json run ./scripts/deploy.ts",
+    "contract:test": "cd hardhat && npx hardhat --tsconfig ./tsconfig.hardhat.json test",
+    "task": "cd hardhat && npx hardhat --tsconfig ./tsconfig.hardhat.json",
+    "w3f:test": "npx w3f test wrf/src/web3Functions/display-string/index.ts  --show-logs",
+    "w3f:deploy":"npx w3f deploy wrf/src/web3Functions/display-string/index.ts",
+    "w3f:build": "yarn install && yarn compile && npx tsc",
+    "start": "react-scripts start",
+    "build-react": "react-scripts build",
+    "test-react": "react-scripts test",
+    "eject-react": "react-scripts eject",
+    "clean": "yarn hardhat clean && rm -rf dist",
+    "format": "prettier --write '*/**/*.*{js,sol,json,md,ts}'",
+    "format:check": "prettier --check '*/**/*.*{js,sol,json,md,ts}'",
+    "lint": "eslint --cache . && yarn lint:sol",
+    "lint:ts": "eslint -c .eslintrc.json --ext \"**/*.ts\" \"**/*.test.ts\"",
+    "lint:sol": "solhint 'contracts/**/*.sol'",
+    "test": "npx hardhat test",
+    "verify": "npx hardhat etherscan-verify"
+  },
   "dependencies": {
-    "@gelatonetwork/relay-sdk": "^3.1.0",
+    "@gelatonetwork/ops-sdk": "^2.1.1-alpha",
+    "@gelatonetwork/web3-functions-sdk": "^0.4.3",
     "@nomiclabs/hardhat-ethers": "^2.2.2",
+    "@nomiclabs/hardhat-waffle": "^2.0.5",
     "@openzeppelin/contracts-upgradeable": "^4.8.1",
     "@thirdweb-dev/contracts": "^3.3.2",
     "@thirdweb-dev/react": "^3.6.9",
@@ -19,6 +44,7 @@
     "@typescript-eslint/eslint-plugin": "^5.49.0",
     "@typescript-eslint/parser": "^5.49.0",
     "daisyui": "^2.46.1",
+    "dotenv": "^16.0.2",
     "eslint": "^8.33.0",
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-prettier": "^4.2.1",
@@ -37,22 +63,6 @@
     "typechain": "^8.1.1",
     "typescript": "^4.9.4"
   },
-  "scripts": {
-    "start": "react-scripts start",
-    "build-react": "react-scripts build",
-    "test-react": "react-scripts test",
-    "eject-react": "react-scripts eject",
-    "build": "yarn install && yarn compile && npx tsc",
-    "clean": "yarn hardhat clean && rm -rf dist",
-    "compile": "npx hardhat compile",
-    "format": "prettier --write '*/**/*.*{js,sol,json,md,ts}'",
-    "format:check": "prettier --check '*/**/*.*{js,sol,json,md,ts}'",
-    "lint": "eslint --cache . && yarn lint:sol",
-    "lint:ts": "eslint -c .eslintrc.json --ext \"**/*.ts\" \"**/*.test.ts\"",
-    "lint:sol": "solhint 'contracts/**/*.sol'",
-    "test": "npx hardhat test",
-    "verify": "npx hardhat etherscan-verify"
-  },
   "eslintConfig": {
     "extends": [
       "react-app",
@@ -70,5 +80,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@nomiclabs/hardhat-etherscan": "^3.1.6"
   }
 }

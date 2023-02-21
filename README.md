@@ -1,70 +1,66 @@
-# Getting Started with Create React App
+# 🍦 Gelato Web3 Functions && 👷 Hardhat && React
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This  should help devs create web3 serverless functions easily, providing a hardhat instance, a basic react UI and the required infrastructure to get up and running.
 
-## Available Scripts
+This repo consists of the [off-chain resolver template](https://github.com/gelatodigital/off-chain-resolver-template) and a hardhat folder with a contract called StringDisplay.sol as well as a React minimal frontend .
 
-In the project directory, you can run:
+This contract locks an amount for one year. We have created a method called "unLock()" that will be called by Gelato OPS, when certain conditions off chain happen.
 
-### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+&nbsp;
 
-### `npm test`
+# 🏄‍♂️ Quick Start
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Add the env keys required
 
-### `npm run build`
+```bash
+RPC=YOUR_PROVIDER_URL
+PROVIDER_URL=YOUR_PROVIDER_URL
+PK=YOUR PRIVATE KEY
+MUMBAI_API_KEY=YOUR ETHERSCAN/POLYGON KEY
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Web3 functions
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+//TODO
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Contract Deployment
 
-### `npm run eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+It is worth noticing that the difference between RPC and PROVIDER_URL. In the case that we are on testnet, the value will be the same, in the case that we are working on a forked network, the PROVIDER_URL eill be the localhost: `http://127.0.0.1:8545`
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Change the values in .env-example file and rename it to .env
+&nbsp;
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### 2) : We open a separate terminal and create a local forked mumbai
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```javascript
+npm run fork
+```
 
-## Learn More
+### 3) : We compile our contract
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```javascript
+npm run compile
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### 4) : We deploy our contract
 
-### Code Splitting
+```javascript
+npm run contract:deploy
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
 
-### Analyzing the Bundle Size
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
 
-### Making a Progressive Web App
+## Test e2e 
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+At this point, we have all of our ingredients. On the one hand, we have a contract deployed to Goerli. Within the contract there is a method that will nb executed by Gelato ops; and on the other side, we have our assembly module deploy to ipfs (we can think as a kind of cloud function) that polywrap would help us withh it. ,,,,
 
-### Advanced Configuration
+before we run the test in file [LockResolver.ts](https://github.com/donoso-eth/off-chain/blob/master/hardhat/test/LockResolver.ts).
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
 
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```javasript
+npm run contracts:test
+```
