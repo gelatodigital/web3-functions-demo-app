@@ -84,13 +84,24 @@ let network: 'mumbai' | 'localhost' = 'mumbai';// "localhost"; //
         alert("Please install Metamask");
       } else if (ethereum.isMetaMask) {
         const provider = new ethers.providers.Web3Provider(ethereum as any);
+        const currentChainId = await ethereum.request({
+          method: 'eth_chainId',
+        });
+    
+        console.log(91,currentChainId)
+
+        if (currentChainId !== "0x13881"){
+          await ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: "0x13881"}],
+          });
+        }
+
         const accounts = await provider.send("eth_requestAccounts", []);
         const { chainId } = await provider.getNetwork();
         let signer = await provider.getSigner();
         setSigner(signer);
-        if (chainId !== 137) {
-          alert("Please connect to Polygon");
-        }
+  
         initializeContract(signer)
     
       }
