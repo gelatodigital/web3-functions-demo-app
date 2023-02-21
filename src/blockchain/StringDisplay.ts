@@ -28,6 +28,7 @@ import type {
 
 export interface StringDisplayInterface extends utils.Interface {
   functions: {
+    "active()": FunctionFragment;
     "display()": FunctionFragment;
     "setMockString(string)": FunctionFragment;
     "setOpsProxy(address)": FunctionFragment;
@@ -37,6 +38,7 @@ export interface StringDisplayInterface extends utils.Interface {
 
   getFunction(
     nameOrSignatureOrTopic:
+      | "active"
       | "display"
       | "setMockString"
       | "setOpsProxy"
@@ -44,6 +46,7 @@ export interface StringDisplayInterface extends utils.Interface {
       | "toggleChange"
   ): FunctionFragment;
 
+  encodeFunctionData(functionFragment: "active", values?: undefined): string;
   encodeFunctionData(functionFragment: "display", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "setMockString",
@@ -62,6 +65,7 @@ export interface StringDisplayInterface extends utils.Interface {
     values?: undefined
   ): string;
 
+  decodeFunctionResult(functionFragment: "active", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "display", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "setMockString",
@@ -116,6 +120,8 @@ export interface StringDisplay extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    active(overrides?: CallOverrides): Promise<[boolean]>;
+
     display(overrides?: CallOverrides): Promise<[string]>;
 
     setMockString(
@@ -137,6 +143,8 @@ export interface StringDisplay extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
   };
+
+  active(overrides?: CallOverrides): Promise<boolean>;
 
   display(overrides?: CallOverrides): Promise<string>;
 
@@ -160,6 +168,8 @@ export interface StringDisplay extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    active(overrides?: CallOverrides): Promise<boolean>;
+
     display(overrides?: CallOverrides): Promise<string>;
 
     setMockString(
@@ -186,6 +196,8 @@ export interface StringDisplay extends BaseContract {
   };
 
   estimateGas: {
+    active(overrides?: CallOverrides): Promise<BigNumber>;
+
     display(overrides?: CallOverrides): Promise<BigNumber>;
 
     setMockString(
@@ -209,6 +221,8 @@ export interface StringDisplay extends BaseContract {
   };
 
   populateTransaction: {
+    active(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     display(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     setMockString(

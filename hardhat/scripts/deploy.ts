@@ -16,11 +16,7 @@ ensureDirSync(contract_path)
 
 async function main() {
 
-  let a = BigNumber.from(0.1).div(BigNumber.from(10));
-  console.log(a.toString())
 
-
-  return
   const [deployer] = await initEnv(hre);
 
   let nonce = await deployer.getTransactionCount();

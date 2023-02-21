@@ -7,7 +7,7 @@ import { join } from 'path';
 task('verify-contract', 'verify').setAction(async ({}, hre) => {
 
   await hre.run('verify:verify', {
-    address: "0x902a666c5034970f67Ab3a97882e3CC797CbA783",
+    address: "0x67C982310a687e43bA2A659b1117f6c5B73bB662",
     constructorArguments: [ ],
   });
 });

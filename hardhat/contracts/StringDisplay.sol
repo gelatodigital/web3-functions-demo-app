@@ -9,7 +9,7 @@ contract StringDisplay {
     string public display = 'initial';
     address owner;
     address opsProxy;
-    bool active = false;
+    bool public active = false;
     event NewString();
 
     constructor() {
