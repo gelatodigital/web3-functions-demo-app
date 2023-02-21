@@ -1,4 +1,4 @@
-# 🍦 Gelato Web3 Functions && 👷 Hardhat && React
+# Gelato Web3 Functions Demo App using Hardhat & React
 
 This  should help devs create web3 serverless functions easily, providing a hardhat instance, a basic react UI and the required infrastructure to get up and running.
 
