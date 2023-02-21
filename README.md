@@ -2,10 +2,9 @@
 
 This  should help devs create web3 serverless functions easily, providing a hardhat instance, a basic react UI and the required infrastructure to get up and running.
 
-This repo consists of the [wef3 functionstemplate](https://github.com/gelatodigital/web3-functions-template), a hardhat folder with a contract called StringDisplay.sol as well as a React minimal frontend .
+This repo consists of the [web3 functions template](https://github.com/gelatodigital/web3-functions-template), a hardhat folder with a contract called StringDisplay.sol as well as a minimal frontend written in React.
 
-The contract has a string variable that can be updated when the contract variable active is set to true.
-
+The contract has a string variable that can be updated when the contract variable `active` is set to true.
 
 &nbsp;
 
