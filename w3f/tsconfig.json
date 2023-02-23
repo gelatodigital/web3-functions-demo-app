@@ -15,6 +15,6 @@
     "declaration": true,
     "useUnknownInCatchVariables": false
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts"],
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "../hardhat/scripts/test.ts"],
   "exclude": ["node_modules"]
 }

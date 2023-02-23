@@ -1,4 +1,4 @@
-import { HardhatUserConfig } from "hardhat/config";
+ import { HardhatUserConfig } from "hardhat/config";
 
 import { resolve} from 'path';
 import '@nomiclabs/hardhat-ethers';
@@ -20,7 +20,7 @@ if (existsSync('./typechain-types')) {
 }//
 
 let defaultNetwork = "mumbai";
-//defaultNetwork = "localhost";
+defaultNetwork = "localhost";
 
 const config: HardhatUserConfig = {
   solidity: "0.8.17",

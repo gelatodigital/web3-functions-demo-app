@@ -34,26 +34,61 @@ Change the values in .env-example file and rename it to .env
 ## Web3 functions
 
 ### 1) index.ts
-You can review the code of the funcion at the index.ts at `wrf/src/web3Functions/display-string/index.ts`
+You can review the code of the funcion at the index.ts at `w3f/src/web3Functions/display-string/index.ts`
 
 
 ### 2) Test your web3 function
 ```javascript
-npx w3f test wrf/src/web3Functions/display-string/index.ts  --show-logs
+npx w3f test w3f/src/web3Functions/display-string/index.ts  --show-logs
 ```
 
 ### 3) Deploy the web3 function
 ```javascript
-npx w3f deploy wrf/src/web3Functions/display-string/index.ts
+npx w3f deploy w3f/src/web3Functions/display-string/index.ts
 ```
 Deploying we will receive the CID.
 
 ```javascript
-> npx w3f deploy wrf/src/web3Functions/display-string/index.ts
+> npx w3f deploy w3f/src/web3Functions/display-string/index.ts
 
  ✓ Web3Function deployed to ipfs.
  ✓ CID: QmXqEvqQLzrQ1PcrR3ub2YqfHFqbHXrChusaGmtkTc2SMy
  ```
+
+If we want to create a task and test in forked network we would have now to fork and deploy our contracts.
+### 4) Create your task
+We can create our task programatically as we can see at the [create-task.ts](https://github.com/gelatodigital/web3-functions-demo-app/blob/master/w3f/src/scripts/create-task.ts)
+As we are working in a local forked network we don't need get whitelisted to cr4eate the task.
+
+We have a command to create the task
+```javascript
+npm run create-task
+```
+
+### 5) Test the execution of your Web3 Funcition on a forked network
+As the hadhat and the w3f instances have different root diectories and the wef executions we will need to copy the `deno-bin` package folder to hardhat folder. Please copy `node_modules/deno-bin` folder into `hardhat/node_modules/deno-bin`
+
+<img src="images/deno-bin.png" width="300"/>
+
+We hacve created out test execution at []([w3f-test.ts](https://github.com/gelatodigital/web3-functions-demo-app/blob/master/hardhat/scripts/w3f-test.ts))
+
+This script does following steps:
+
+1) Impersoante Ops Executor
+2) Build the Web3 Function
+3) Run the Web3 Function
+4) If run returns canExec = false --> do nothing
+5) if canExec=true
+    5.1) create module data for the task
+    5.2) Create instance of ops contract on mumbai
+    5.3) Execute the task through the ops contract with `exec1Balance()`method 
+
+In order to run the script we will use 
+
+```javascript
+npm run w3f:test-harhat
+```
+
 
 ## Contract Deployment
 

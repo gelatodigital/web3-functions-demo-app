@@ -20,7 +20,7 @@ function App() {
     null
   );
 
-let network: 'mumbai' | 'localhost' = 'mumbai';// "localhost"; // 
+let network: 'mumbai' | 'localhost' = "localhost"; // 'mumbai';// "localhost"; // 
 
 
  const initializeContract = async (signer:any) =>{
@@ -88,7 +88,7 @@ let network: 'mumbai' | 'localhost' = 'mumbai';// "localhost"; //
           method: 'eth_chainId',
         });
     
-        console.log(91,currentChainId)
+
 
         if (currentChainId !== "0x13881"){
           await ethereum.request({
