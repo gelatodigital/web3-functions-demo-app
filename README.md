@@ -70,7 +70,7 @@ As the hadhat and the w3f instances have different root diectories and the wef e
 
 <img src="images/deno-bin.png" width="300"/>
 
-We hacve created out test execution at []([w3f-test.ts](https://github.com/gelatodigital/web3-functions-demo-app/blob/master/hardhat/scripts/w3f-test.ts))
+We have created out test execution at [w3f-test.ts](https://github.com/gelatodigital/web3-functions-demo-app/blob/master/hardhat/scripts/w3f-test.ts)
 
 This script does following steps:
 
@@ -79,8 +79,11 @@ This script does following steps:
 3) Run the Web3 Function
 4) If run returns canExec = false --> do nothing
 5) if canExec=true
+
     5.1) create module data for the task
+
     5.2) Create instance of ops contract on mumbai
+
     5.3) Execute the task through the ops contract with `exec1Balance()`method 
 
 In order to run the script we will use 
