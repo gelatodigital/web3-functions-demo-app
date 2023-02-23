@@ -40,7 +40,7 @@ Web3Function.onRun(async (context: Web3FunctionContext) => {
       type: "function",
     }
   ];
-  let contractAddress = "0xeBbAcB67A6d09bA825dbFeAFd84187300Bc96867" //"0x67C982310a687e43bA2A659b1117f6c5B73bB662";
+  let contractAddress = "0xd321ed28472Bfe623B58810148888E5D30de7269";
 
   let contract = new ethers.Contract(contractAddress, abi, provider);
   let active = await contract.active();

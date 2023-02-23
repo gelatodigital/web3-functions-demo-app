@@ -1,4 +1,4 @@
-// ../wrf/src/web3Functions/display-string/index.ts
+// ../w3f/src/web3Functions/display-string/index.ts
 import { ethers } from "ethers";
 import {
   Web3Function
@@ -36,7 +36,7 @@ Web3Function.onRun(async (context) => {
       type: "function"
     }
   ];
-  let contractAddress = "0xeBbAcB67A6d09bA825dbFeAFd84187300Bc96867";
+  let contractAddress = "0xd321ed28472Bfe623B58810148888E5D30de7269";
   let contract = new ethers.Contract(contractAddress, abi, provider);
   let active = await contract.active();
   if (!active) {

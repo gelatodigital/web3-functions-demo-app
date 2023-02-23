@@ -44188,7 +44188,7 @@ var require_lib33 = __commonJS({
   }
 });
 
-// ../wrf/src/web3Functions/display-string/index.ts
+// ../w3f/src/web3Functions/display-string/index.ts
 var import_ethers = __toESM(require_lib32());
 var import_web3_functions_sdk = __toESM(require_lib33());
 
@@ -44684,7 +44684,7 @@ var createInstance = (defaults) => {
 var ky = createInstance();
 var distribution_default = ky;
 
-// ../wrf/src/web3Functions/display-string/index.ts
+// ../w3f/src/web3Functions/display-string/index.ts
 import_web3_functions_sdk.Web3Function.onRun(async (context) => {
   const { userArgs, gelatoArgs, provider } = context;
   let abi = [
@@ -44717,7 +44717,7 @@ import_web3_functions_sdk.Web3Function.onRun(async (context) => {
       type: "function"
     }
   ];
-  let contractAddress = "0xeBbAcB67A6d09bA825dbFeAFd84187300Bc96867";
+  let contractAddress = "0xd321ed28472Bfe623B58810148888E5D30de7269";
   let contract = new import_ethers.ethers.Contract(contractAddress, abi, provider);
   let active = await contract.active();
   if (!active) {

@@ -66,10 +66,10 @@ npm run create-task
 ```
 
 ### 5) Test the execution of your Web3 Funcition on a forked network
-As the hadhat and the w3f instances have different root diectories and the wef executions we will need to copy the `deno-bin` package folder to hardhat folder. Please copy `node_modules/deno-bin` folder into `hardhat/node_modules/deno-bin`
-
-<img src="images/deno-bin.png" width="300"/>
-
+Please install the deno package into the hardhat folder with:
+```javascript
+npm i install-deno
+```
 We have created out test execution at [w3f-test.ts](https://github.com/gelatodigital/web3-functions-demo-app/blob/master/hardhat/scripts/w3f-test.ts)
 
 This script does following steps:

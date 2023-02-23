@@ -1,0 +1,8 @@
+{
+  "name": "create-gasless-app-harhdat",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "deno-bin": "^1.30.3"
+  }
+}

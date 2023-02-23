@@ -12,32 +12,11 @@ const providerUrl = process.env.PROVIDER_URL;
 
 // Default Setting
 const chainId = 80001;
-const execAddress = "0xeBbAcB67A6d09bA825dbFeAFd84187300Bc96867";
+const execAddress = "0xd321ed28472Bfe623B58810148888E5D30de7269";
 const execAbi =[
-  {
-    inputs: [],
-    name: "active",
-    outputs: [{ internalType: "bool", name: "", type: "bool" }],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "display",
-    outputs: [{ internalType: "string", name: "", type: "string" }],
-    stateMutability: "view",
-    type: "function",
-  },
   {
     inputs: [{ internalType: "string", name: "_string", type: "string" }],
     name: "setMockString",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [{ internalType: "string", name: "_string", type: "string" }],
-    name: "setString",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
