@@ -13,7 +13,10 @@ Web3Function.onRun(async (context: Web3FunctionContext) => {
   const { storage, userArgs, gelatoArgs, provider, secrets } = context;
 
   ///// Gelato Arguments
+  
+  let blockTime = Math.floor(gelatoArgs.blockTime)
   let currentTime = new Date(gelatoArgs.blockTime*1000).toUTCString()
+  
 
   //// User Arguments
   const contractAddress = userArgs.execAddress as string;
@@ -29,6 +32,7 @@ Web3Function.onRun(async (context: Web3FunctionContext) => {
 
   ///// State /////////
   let nrExecutions = parseInt((await storage.get("nrExecutions")) ?? "0");
+  let lastBlockTimeExecution = parseInt((await storage.get("lastBlockTimeExecution")) ?? "0");
 
   let abi = [
     "function active() view returns (bool)",
@@ -42,44 +46,38 @@ Web3Function.onRun(async (context: Web3FunctionContext) => {
     return { canExec: false, message: "Contract not active" };
   }
 
-  let randomApi = `http://www.randomnumberapi.com/api/v1.0/random?min=0&max=100&count=1`;
 
-  // we are using the lightweight ky library for doing the get request
-  let randomApiRes: any = await ky.get(randomApi).json();
-
-  if (!randomApiRes) throw Error("Get random number api failed");
-  let random = randomApiRes[0] as number;
-
-  if (random <= 75) {
+  if (lastBlockTimeExecution + 160 > blockTime) {
     // We tell the executor that no transaction has to be executer
-    return { canExec: false, message: `Number ${random}  <= 75, Executions: ${nrExecutions}` };
+    return { canExec: false, message: `${lastBlockTimeExecution + 120 -blockTime} sec to next Execution, Executions: ${nrExecutions}` };
   } else {
+
+    const randomQuoteApi = `https://zenquotes.io/api/random`;
+
+    const quote: { q: string; a: string }[] = await ky
+      .get(randomQuoteApi, { timeout: 5_000, retry: 0 })
+      .json();
+  
+    let message = `${quote[0].a}: ${quote[0].q}`;
+    console.log(message);
+
+
     nrExecutions = nrExecutions + 1;
     await storage.set("nrExecutions", nrExecutions.toString());
+    await storage.set("lastBlockTimeExecution", blockTime.toString());
+  
+    await sendmail({ apikey, to, from, nrExecutions, time:currentTime });
+  
+  
 
-    if (nrExecutions % 10 == 0) {
-      await sendmail({ apikey, to, from, nrExecutions, time:currentTime });
-    }
-
-    let rString = randomString(10);
-    const tx = await contract.populateTransaction.setMockString(rString);
+    const tx = await contract.populateTransaction.setMockString(message);
     const data = tx.data as string;
 
     return { canExec: true, callData: data };
   }
 });
 
-const randomString = (length: number): string => {
-  const alphabet =
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-  const alphabet_length = alphabet.length - 1;
-  let randomString = "";
-  for (let i = 0; i < length; i++) {
-    const random_number = Math.floor(Math.random() * alphabet_length) + 1;
-    randomString += alphabet[random_number];
-  }
-  return randomString;
-};
+
 
 export const sendmail = async (options: {
   apikey: string;

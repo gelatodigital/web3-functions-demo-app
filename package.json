@@ -12,7 +12,7 @@
     "create-task": "ts-node w3f/src/scripts/create-task.ts",
     "contract:test": "cd hardhat && npx hardhat --tsconfig ./tsconfig.hardhat.json test",
     "task": "cd hardhat && npx hardhat --tsconfig ./tsconfig.hardhat.json",
-    "w3f:test": "npx w3f test w3f/src/web3Functions/display-string/index.ts  --user-args=execAddress:0x472cd7f51e35411d2f988a03c2174b437ef6967a --show-logs",
+    "w3f:test": "npx w3f test w3f/src/web3Functions/display-string/index.ts  --user-args=execAddress:0x054FA50FcC3E33465A72405229771d5deAA09Ab3 --show-logs",
     "w3f:deploy": "npx w3f deploy w3f/src/web3Functions/display-string/index.ts",
     "w3f:build": "yarn install && yarn compile && npx tsc",
     "start": "react-scripts start",

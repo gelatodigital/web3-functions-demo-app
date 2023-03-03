@@ -20,7 +20,8 @@ if (existsSync('./typechain-types')) {
 }//
 
 let defaultNetwork = "mumbai";
-defaultNetwork = "localhost";
+// defaultNetwork = "localhost";
+ defaultNetwork = "matic"
 
 const config: HardhatUserConfig = {
   solidity: "0.8.17",
@@ -37,6 +38,16 @@ const config: HardhatUserConfig = {
       url: 'http://localhost:8545',
       chainId: 31337,
     },
+    matic: {
+      url: 'https://polygon-rpc.com', //'https://polygon-mainnet.g.alchemy.com/v2/r6kvmGCX5T_vMG1vdQhuXBtHaOuZECdX',
+  
+      //https://polygon-rpc.com 0x5dcde0c1be6cdfacba8866e56182e66221c6eaf3f6a421bc58b6939d84e57b7b
+      gasPrice: 1000000000,
+          accounts:
+        process.env['PK'] !== undefined
+          ? [process.env['PK']]
+          : [],
+    },
     goerli: {
       url:RPCURL,
       gasPrice: 1000000000,
@@ -51,7 +62,7 @@ const config: HardhatUserConfig = {
   etherscan: {
      
      apiKey: { 
-      polygonMumbai:process.env['MUMBAI_API_KEY']!,
+      polygon:process.env['MUMBAI_API_KEY']!,
       goerli: process.env['ETHERSCAN_API_KEY']!
      }
   },

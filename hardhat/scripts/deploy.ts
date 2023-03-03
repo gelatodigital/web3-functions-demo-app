@@ -18,10 +18,13 @@ async function main() {
 
 
   const [deployer] = await initEnv(hre);
+  let provider =  hre.ethers.provider;
+  console.log(deployer.address)
+  console.log(await provider.getBalance(deployer.address))
 
   let nonce = await deployer.getTransactionCount();
 
-  const stringDisplay = await new  StringDisplay__factory(deployer).deploy({gasLimit:10000000, nonce});
+  const stringDisplay = await new  StringDisplay__factory(deployer).deploy({gasLimit:1000000, gasPrice: 190000000000, nonce: 0});
   
   let metadata = {
     address: stringDisplay.address,

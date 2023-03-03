@@ -20,7 +20,7 @@ function App() {
     null
   );
 
-let network: 'mumbai' | 'localhost' = "mumbai"; // 'mumbai';// "localhost"; // 
+let network: 'mumbai' | 'localhost'  | 'polygon'= "polygon"; //"mumbai"; // 'mumbai';// "localhost"; // 
 
 
  const initializeContract = async (signer:any) =>{
@@ -88,12 +88,12 @@ let network: 'mumbai' | 'localhost' = "mumbai"; // 'mumbai';// "localhost"; //
           method: 'eth_chainId',
         });
     
+        console.log(currentChainId)
 
-
-        if (currentChainId !== "0x13881"){
+        if (currentChainId !== "0x89"){
           await ethereum.request({
             method: 'wallet_switchEthereumChain',
-            params: [{ chainId: "0x13881"}],
+            params: [{ chainId: "0x89"}],
           });
         }
 

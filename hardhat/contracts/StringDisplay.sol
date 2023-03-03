@@ -6,7 +6,7 @@ pragma solidity ^0.8.17;
 import "hardhat/console.sol";
 
 contract StringDisplay {
-    string public display = 'initial';
+    string public display = 'Zero Quote';
     address owner;
     address opsProxy;
     bool public active = false;
