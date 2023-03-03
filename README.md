@@ -6,7 +6,7 @@ This repo consists of the [web3 functions template](https://github.com/gelatodig
 
 The contract has a string variable that can be updated when the contract variable `active` is set to true.
 
-The contract is deployeed on mumbai [here](https://mumbai.polygonscan.com/address/0x67c982310a687e43ba2a659b1117f6c5b73bb662) and the current running task can be seen at: [task](https://beta.app.gelato.network/task/0x9d960c4ad76e1a0d9a5ae056fe5fd8186f3138c35ec3394f31ad61965428ac5b?chainId=80001)
+The contract is deployeed on  polygon [here](https://polygonscan.com/address/0x054FA50FcC3E33465A72405229771d5deAA09Ab3) and the current running task can be seen at: [task](https://beta.app.gelato.network/task/0x3fa2ac06fdfb3c5fbe02c31e05cbf11bc659f2f710f11c3ee53ef3c3defe99d8?chainId=137)
 
 The demo app is line under: [https://web3-functions-demo.gelato.network/](https://web3-functions-demo.gelato.network/)
 
