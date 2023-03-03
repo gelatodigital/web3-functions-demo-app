@@ -20,7 +20,7 @@ function App() {
     null
   );
 
-let network: 'mumbai' | 'localhost' = "localhost"; // 'mumbai';// "localhost"; // 
+let network: 'mumbai' | 'localhost' = "mumbai"; // 'mumbai';// "localhost"; // 
 
 
  const initializeContract = async (signer:any) =>{
