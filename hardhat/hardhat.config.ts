@@ -5,6 +5,8 @@ import '@nomiclabs/hardhat-ethers';
 import '@nomiclabs/hardhat-etherscan';
 import '@nomiclabs/hardhat-waffle';
 import '@typechain/hardhat';
+import 'hardhat-deploy';
+
 import { existsSync } from "fs-extra";
 import * as glob from 'glob';
 import * as dotenv from 'dotenv';
@@ -20,12 +22,15 @@ if (existsSync('./typechain-types')) {
 }//
 
 let defaultNetwork = "mumbai";
-// defaultNetwork = "localhost";
- defaultNetwork = "matic"
+///defaultNetwork = "localhost";
+// defaultNetwork = "matic"
 
 const config: HardhatUserConfig = {
   solidity: "0.8.17",
   defaultNetwork,
+  namedAccounts: {
+    deployer: 0
+},
   networks: {
     hardhat: {
       forking: {
@@ -63,7 +68,8 @@ const config: HardhatUserConfig = {
      
      apiKey: { 
       polygon:process.env['MUMBAI_API_KEY']!,
-      goerli: process.env['ETHERSCAN_API_KEY']!
+      goerli: process.env['ETHERSCAN_API_KEY']!,
+      polygonMumbai:process.env['MUMBAI_API_KEY']!
      }
   },
 };

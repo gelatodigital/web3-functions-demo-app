@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "install-deno":"cd hardhat && npm i",
+    "install-deno": "cd hardhat && npm i",
     "chain": "cd hardhat && npx hardhat --tsconfig ./tsconfig.hardhat.json node",
     "compile": "cd hardhat && npx hardhat --tsconfig ./tsconfig.hardhat.json compile",
     "fork": "cd hardhat && npx hardhat --tsconfig ./tsconfig.hardhat.json node  --network hardhat",
-    "contract:deploy": "cd hardhat && npx hardhat --tsconfig ./tsconfig.hardhat.json run ./scripts/deploy.ts",
+    "contract:deploy": "cd hardhat && npx hardhat --tsconfig ./tsconfig.hardhat.json deploy",
     "w3f:test-harhat": "cd hardhat && npx hardhat --tsconfig ./tsconfig.hardhat.json run ./scripts/w3f-test.ts",
     "create-task": "ts-node w3f/src/scripts/create-task.ts",
     "contract:test": "cd hardhat && npx hardhat --tsconfig ./tsconfig.hardhat.json test",
@@ -31,7 +31,6 @@
   "dependencies": {
     "@gelatonetwork/ops-sdk": "^2.2.0-alpha",
     "@gelatonetwork/web3-functions-sdk": "^0.4.3",
-    "@nomiclabs/hardhat-ethers": "^2.2.2",
     "@nomiclabs/hardhat-waffle": "^2.0.5",
     "@openzeppelin/contracts-upgradeable": "^4.8.1",
     "@thirdweb-dev/contracts": "^3.3.2",
@@ -52,7 +51,6 @@
     "eslint": "^8.33.0",
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "ethers": "^5.7.2",
     "hardhat": "^2.12.6",
     "prettier": "^2.8.3",
     "prettier-plugin-solidity": "^1.1.1",
@@ -86,6 +84,9 @@
     ]
   },
   "devDependencies": {
-    "@nomiclabs/hardhat-etherscan": "^3.1.6"
+    "@nomiclabs/hardhat-ethers": "npm:hardhat-deploy-ethers@^0.3.0-beta.13",
+    "@nomiclabs/hardhat-etherscan": "^3.1.6",
+    "ethers": "^5.7.2",
+    "hardhat-deploy": "^0.11.25"
   }
 }
